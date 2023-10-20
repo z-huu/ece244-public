@@ -36,6 +36,7 @@ int main() {
 
     string line;
     string command;
+    string commandList[6] = {"maxShapes", "create", "move", "rotate", "draw", "delete"};
     
     cout << "> ";         // Prompt for input
     getline(cin, line);    // Get a line from standard input
@@ -49,12 +50,26 @@ int main() {
         // The only way this can fail is if the eof is encountered
         lineStream >> command;
 
+
         // Check for the command and act accordingly
         // ECE244 Student: Insert your code here
         
+        // the next lineStream stringstream will take in the input's argument... i think.
         
-        
-        
+        if (command == commandList[0]) { //maxShapes
+
+        } else if (command == commandList[1]) { // create
+
+        } else if (command == commandList[2]) { //move
+
+        } else if (command == commandList[3]) { //rotate
+
+        } else if (command == commandList[4]) { //draw
+
+        } else { //delete
+
+        }
+
         // Once the command has been processed, prompt for the
         // next command
         cout << "> ";          // Prompt for input
