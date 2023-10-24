@@ -36,6 +36,7 @@ int main() {
 
     string line;
     string command;
+    string argument;
     string commandList[6] = {"maxShapes", "create", "move", "rotate", "draw", "delete"};
     
     cout << "> ";         // Prompt for input
@@ -50,7 +51,6 @@ int main() {
         // The only way this can fail is if the eof is encountered
         lineStream >> command;
 
-
         // Check for the command and act accordingly
         // ECE244 Student: Insert your code here
         
@@ -58,9 +58,27 @@ int main() {
         
         if (command == commandList[0]) { //maxShapes
 
-        // error check number of arguments
+        // error check number of arguments (only one possible, value)
 
-        // take in argument(s)
+            if (lineStream.eof()) { //fileStream has reached the end of input after command, 
+                                    //indicating no argument
+                cout << "Error: too few arguments" << endl;
+            } else {
+                // take in argument(s)
+                lineStream >> max_shapes;
+
+                if (lineStream.fail() ) { //checking for incorrect argument
+                    cout << "Error: invalid argument" << endl;
+                    lineStream.clear();
+                } else if (!lineStream.eof()) { //checking that there are too many args
+                    cout << "Error: too many arguments" << endl;
+                    lineStream.clear();
+                } else { //made it through all error checking. output
+
+                cout << "New database: max shapes is " << max_shapes << endl;
+
+                }
+            }
 
         } else if (command == commandList[1]) { // create
 
@@ -70,9 +88,13 @@ int main() {
 
         } else if (command == commandList[4]) { //draw
 
-        } else { //delete
+        } else if (command == commandList[5]) { //delete
 
+        } else { 
+            cout << "Error: invalid command" << endl;
         }
+
+        
 
         // Once the command has been processed, prompt for the
         // next command
