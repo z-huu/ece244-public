@@ -58,6 +58,10 @@ int main() {
         
         if (command == commandList[0]) { //maxShapes
 
+        // error check number of arguments
+
+        // take in argument(s)
+
         } else if (command == commandList[1]) { // create
 
         } else if (command == commandList[2]) { //move
