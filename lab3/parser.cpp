@@ -70,19 +70,117 @@ int main() {
                 if (lineStream.fail() ) { //checking for incorrect argument
                     cout << "Error: invalid argument" << endl;
                     lineStream.clear();
-                } else if (!lineStream.eof()) { //checking that there are too many args
+                    lineStream.ignore();
+                } else if (!lineStream.eof()) { //checking for more than one argument
                     cout << "Error: too many arguments" << endl;
                     lineStream.clear();
+                    lineStream.ignore();
                 } else { //made it through all error checking. output
 
-                cout << "New database: max shapes is " << max_shapes << endl;
+                    cout << "New database: max shapes is " << max_shapes << endl;
+
+                    //dynamically allocate Shape* array and set all elements to NULL
+                    shapesArray = new Shape*[max_shapes];
+
+                    for (int i = 0; i < max_shapes; i++) {
+                        shapesArray[i] = NULL;
+                    }
 
                 }
             }
 
         } else if (command == commandList[1]) { // create
 
-        } else if (command == commandList[2]) { //move
+            // 5 arguments to come: name (string), type (string), x pos, y pos, x size, y size
+            string name, type;
+            int x_pos, y_pos, x_size, y_size;
+
+            if (lineStream.eof()) { //if no arguments are passed
+                cout << "Error: too few arguments" << endl;
+            } else {
+
+                lineStream >> name;
+
+                if (lineStream.fail()) { //if first argument is invalid
+                    cout<< "Error: invalid argument" << endl;
+                    lineStream.clear();
+                    lineStream.ignore();
+                } else if (lineStream.eof()) { //if only one argument was passed
+                    cout<< "Error: too few arguments" << endl;
+                    lineStream.clear();
+                }
+            }
+
+        } else if (command == commandList[2]) { //move, adjusting Shape object's x and y locations
+            //move name loc1 loc2
+
+            //variables for inputs
+            string name;
+            int locX, locY;
+            bool foundShape = false;
+
+            if (lineStream.eof()) { //no arguments were passed
+                cout << "Error: too few arguments" << endl;
+            } else {
+                
+                lineStream >> name;
+
+                if (lineStream.fail()) { //if first argument is invalid
+                    cout<< "Error: invalid argument" << endl;
+                    lineStream.clear();
+                    lineStream.ignore();
+                } else if (lineStream.eof()) { //if only one argument was passed
+                    cout<< "Error: too few arguments" << endl;
+                    lineStream.clear();
+                } else {
+
+                    lineStream >> locX;
+
+                    if (lineStream.fail()) { //if second argument is invalid
+                        cout << "Error: invalid argument" << endl;
+                        lineStream.clear();
+                        lineStream.ignore();
+                    } else if (lineStream.eof()) { //if only two arguments were passed
+                        cout << "Error: too few arguments" << endl;
+                        lineStream.clear();
+                    } else {
+
+                        lineStream >>locY;
+
+                        if (lineStream.fail()) { //if third argument is invalid
+                            cout << "Error: invalid argument" << endl;
+                            lineStream.clear();
+                            lineStream.ignore();
+                        } else if (!lineStream.eof()) { //if more than three arguments were passed
+                            cout << "Error: too many arguments" << endl;
+                            lineStream.clear();
+                            lineStream.ignore();
+
+                        } else { //we've made it past error checking. let's change the Shape object
+
+                            //search Shapes array for the given name
+                            for (int i = 0; i < shapeCount; i++) {
+                                if (name == shapesArray[i]->getName()) { //found the Shape
+                                    shapesArray[i]->setXlocation(locX);
+                                    shapesArray[i]->setYlocation(locY);
+                                    foundShape = true;
+                                    cout << "Moved " << name << " to " << locX << " " << locY << endl;
+                                    i = shapeCount;
+                                }
+
+                            }
+
+                            if (!foundShape) {
+                                cout << "Error: shape " << name << "not found." << endl;
+                                foundShape = false;
+                            }
+
+                        }
+                    }
+
+                }
+
+            }
 
         } else if (command == commandList[3]) { //rotate
 
