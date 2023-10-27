@@ -133,7 +133,7 @@ int main() {
                     cout<< "Error: too few arguments" << endl;
                     lineStream.clear();
                 } else {
-
+                    
                     lineStream >> locX;
 
                     if (lineStream.fail()) { //if second argument is invalid
@@ -157,7 +157,7 @@ int main() {
                             lineStream.ignore();
 
                         } else { //we've made it past error checking. let's change the Shape object
-
+                            
                             //search Shapes array for the given name
                             for (int i = 0; i < shapeCount; i++) {
                                 if (name == shapesArray[i]->getName()) { //found the Shape
@@ -171,7 +171,7 @@ int main() {
                             }
 
                             if (!foundShape) {
-                                cout << "Error: shape " << name << "not found." << endl;
+                                cout << "Error: shape " << name << " not found." << endl;
                                 foundShape = false;
                             }
 
