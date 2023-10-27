@@ -108,6 +108,48 @@ int main() {
                 } else if (lineStream.eof()) { //if only one argument was passed
                     cout<< "Error: too few arguments" << endl;
                     lineStream.clear();
+                } else {
+
+                    lineStream >> type;
+
+                    if (lineStream.fail()) { //if second argument is invalid
+                        cout << "Error: invalid argument" << endl;
+                        lineStream.clear();
+                        lineStream.ignore();
+                    } else if (lineStream.eof()) { //if only two arguments are passed
+                        cout << "Error: too few arguments" << endl;
+                        lineStream.clear();
+                    } else {
+
+                        lineStream >> x_pos;
+
+                        if (lineStream.fail()) { //if third argument is invalid
+                            cout << "Error: invalid argument" << endl;
+                            lineStream.clear();
+                            lineStream.ignore();                    
+                        } else if (lineStream.eof()) { //if only three arguments are passed
+                            cout <<"Error: too few arguments" << endl;
+                            lineStream.clear();
+                            lineStream.ignore();
+                        } else {
+
+                            lineStream >> y_pos;
+
+                            if (lineStream.fail()) { //if third argument is invalid
+                                cout << "Error: invalid argument" << endl;
+                                lineStream.clear();
+                                lineStream.ignore();                    
+                            } else if (lineStream.eof()) { //if only three arguments are passed
+                                cout <<"Error: too few arguments" << endl;
+                                lineStream.clear();
+                                lineStream.ignore();
+                            }
+
+
+
+                        }
+                    } 
+
                 }
             }
 
@@ -171,7 +213,7 @@ int main() {
                             }
 
                             if (!foundShape) {
-                                cout << "Error: shape " << name << " not found." << endl;
+                                cout << "Error: shape " << name << " not found." << endl; //might be a formatting error here? ~~~~~~~~~~~`
                                 foundShape = false;
                             }
 
