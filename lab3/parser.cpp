@@ -83,7 +83,19 @@ int main() {
 
                     //dynamically allocate Shape* array and set all elements to NULL
 
-                    //do we need to delete the old shapesArray and its contents?
+                    //delete old shapesArray
+                    if (shapesArray != NULL) { //if the array is not null, delete the contents
+                        for (int i = 0; i < max_shapes; i++) { //delete each element of the array
+                            if (shapesArray[i] != NULL) { //if there is a shape at the index
+                                delete shapesArray[i];
+                                shapesArray[i] = NULL;
+                            } else { //if index is empty
+                                continue;
+                            }
+                        }
+                        delete [] shapesArray;
+                    }
+
                     shapesArray = new Shape*[max_shapes];
 
                     for (int i = 0; i < max_shapes; i++) {
@@ -173,28 +185,26 @@ int main() {
                                         lineStream.ignore();
                                     } else { //we made it past error checking. lets create the shape now
 
-                                        shapesArray[shapeCount] = new Shape(name, type, x_pos, y_pos, x_size, y_size);
-
-                                            cout << "Created " << name << ": " <<  x_pos << " " << y_pos << " " 
-                                            << x_size << " " << y_size << endl;
-
-                                        shapeCount++;
+                                        if (shapeCount == max_shapes) {
+                                            cout << "Error: shape array is full" << endl;
+                                        } else {
+                                            for (int i = 0; i < max_shapes; i++) { //finding first null index in shapeArray
+                                                if (shapesArray[i] == NULL) {
+                                                    shapesArray[i] = new Shape(name, type, x_pos, y_pos, x_size, y_size);
+                                                    cout << "Created " << name << ": " <<  x_pos << " " 
+                                                    << y_pos << " " << x_size << " " << y_size << endl;
+                                                    break;
+                                                }
+                                            }
+                                            shapeCount++;
+                                        }
                                     }
-
                                 }
-
                             }
-
                         }
-
-
-
                     }
                 } 
-
-            }
-            
-
+            } 
         } else if (command == commandList[2]) { //move, adjusting Shape object's x and y locations
             //move name loc1 loc2
 
@@ -306,9 +316,23 @@ int main() {
                         lineStream.ignore();
                     
                     } else { //made it past error checking
+                        bool found = false; int index = 0;
+                        //search for shape name in array
+                        for (int i = 0; i < max_shapes && !found; i++) {
+                            if (name == shapesArray[i]->getName()) { //found the name
+                                found = true;
+                                index = i;
+                            }
+                        }
+                        if (found) {
 
-                        cout << "time to rotate aragaga" << endl; //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                            shapesArray[index]->setRotate(angle);
+                            cout << "Rotated " << name << " by " << angle << " degrees" <<endl;
 
+                        } else {
+                            cout << "Error: shape " << name << " not found" << endl;
+                        }
+                                   
                     }
                 }
 
@@ -316,8 +340,50 @@ int main() {
 
         } else if (command == commandList[4]) { //draw
 
+            string arg;
+            //one argument, string could be either name or all
+            //printing shape with given name or printing all shapes
+
+            if (lineStream.eof()) { //no arguments were passed
+                lineStream.clear();
+                lineStream.ignore();
+            } 
+
+            lineStream >> arg;
+
+            if (lineStream.fail()) { //if argument is invalid
+                cout << "Error: invalid argument" << endl;
+                lineStream.clear();
+                lineStream.ignore();
+            } else if (!lineStream.eof()) { //if more than one argument is passed
+                cout << "Error: too many arguments" << endl;
+                lineStream.clear();
+                lineStream.ignore();
+            } else {
+
+                if (arg == "all") { //draw all shapes
+                    
+                } else { //search for shape name;
+                    bool found = false;
+                    for (int i = 0; i < max_shapes; i++) {
+                        if (arg == shapesArray[i]->getName()) { //if shape is found
+                            cout << "Drew "<< arg <<": " << shapesArray[i]->getType() << " " << 
+                            shapesArray[i]->getXlocation() <<" " << shapesArray[i]->getYlocation() << " "
+                            << shapesArray[i]->getXsize() <<" "<< shapesArray[i]->getYsize();
+                            found = true;
+                            break;
+                        }
+                    }
+                    if (!found) { //double check this ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                        cout << "Error: shape "<<arg<<" not found"<<endl;
+                    }
+                }
+
+            }
+
         } else if (command == commandList[5]) { //delete
 
+            shapeCount--;
         } else { 
             cout << "Error: invalid command" << endl;
             lineStream.ignore();
