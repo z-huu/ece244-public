@@ -51,12 +51,11 @@ int main() {
         // The only way this can fail is if the eof is encountered
         lineStream >> command;
 
-        // Check for the command and act accordingly
-        // ECE244 Student: Insert your code here
-        
-        // the next lineStream stringstream will take in the input's argument... i think.
-        
-        if (command == commandList[0]) { //maxShapes
+        if (lineStream.fail()) {
+            cout << "Error: invalid command" << endl;
+            lineStream.clear();
+            lineStream.ignore();
+        } else if (command == commandList[0]) { //maxShapes
 
         // error check number of arguments (only one possible, value)
 
@@ -75,11 +74,16 @@ int main() {
                     cout << "Error: too many arguments" << endl;
                     lineStream.clear();
                     lineStream.ignore();
+                } else if (max_shapes < 0) {
+                    cout << "Error: invalid value" << endl;
+                    lineStream.ignore();
                 } else { //made it through all error checking. output
 
                     cout << "New database: max shapes is " << max_shapes << endl;
 
                     //dynamically allocate Shape* array and set all elements to NULL
+
+                    //do we need to delete the old shapesArray and its contents?
                     shapesArray = new Shape*[max_shapes];
 
                     for (int i = 0; i < max_shapes; i++) {
@@ -135,23 +139,61 @@ int main() {
 
                             lineStream >> y_pos;
 
-                            if (lineStream.fail()) { //if third argument is invalid
+                            if (lineStream.fail()) { //if fourth argument is invalid
                                 cout << "Error: invalid argument" << endl;
                                 lineStream.clear();
                                 lineStream.ignore();                    
-                            } else if (lineStream.eof()) { //if only three arguments are passed
+                            } else if (lineStream.eof()) { //if only four arguments are passed
                                 cout <<"Error: too few arguments" << endl;
                                 lineStream.clear();
                                 lineStream.ignore();
+                            } else {
+
+                                lineStream >> x_size;
+
+                                if (lineStream.fail()) { //if fifth argument is invalid
+                                    cout << "Error: invalid argument" << endl;
+                                    lineStream.clear();
+                                    lineStream.ignore();                    
+                                } else if (lineStream.eof()) { //if only five arguments are passed
+                                    cout <<"Error: too few arguments" << endl;
+                                    lineStream.clear();
+                                    lineStream.ignore();
+                                } else {
+
+                                    lineStream >> y_size;
+
+                                    if (lineStream.fail()) { //if sixth argument is invalid
+                                        cout << "Error: invalid argument" << endl;
+                                        lineStream.clear();
+                                        lineStream.ignore();
+                                    } else if (!lineStream.eof()) { //if more than six arguments are passed
+                                        cout << "Error: too many arguments" << endl;
+                                        lineStream.clear();
+                                        lineStream.ignore();
+                                    } else { //we made it past error checking. lets create the shape now
+
+                                        shapesArray[shapeCount] = new Shape(name, type, x_pos, y_pos, x_size, y_size);
+
+                                            cout << "Created " << name << ": " <<  x_pos << " " << y_pos << " " 
+                                            << x_size << " " << y_size << endl;
+
+                                        shapeCount++;
+                                    }
+
+                                }
+
                             }
 
-
-
                         }
-                    } 
 
-                }
+
+
+                    }
+                } 
+
             }
+            
 
         } else if (command == commandList[2]) { //move, adjusting Shape object's x and y locations
             //move name loc1 loc2
@@ -226,12 +268,59 @@ int main() {
 
         } else if (command == commandList[3]) { //rotate
 
+            string name; int angle;
+            //2 arguments: name & angle (between 0 and 360)
+
+            if (lineStream.eof()) { //if no arguments were passed
+                cout << "Error: too few arguments" << endl;
+                lineStream.clear();
+                lineStream.ignore();
+            } else {
+
+                lineStream >> name;
+
+                if (lineStream.fail()) { //if first argument is invalid
+                    cout << "Error: invalid argument" << endl;
+                    lineStream.clear();
+                    lineStream.ignore();
+                } else if (lineStream.eof()) { //if only one argument was passed
+                    cout<< "Error: too few arguments" << endl;
+                    lineStream.clear();
+                    lineStream.ignore();
+                } else {
+
+                    lineStream >> angle;
+
+                    if (lineStream.fail()) { //if the second argument is invalid
+                        cout << "Error: invalid argument" << endl;
+                        lineStream.clear();
+                        lineStream.ignore();
+                    } else if (!lineStream.eof()) { //if more than two arguments were passed
+                        cout << "Error: too many arguments" << endl;
+                        lineStream.clear();
+                        lineStream.ignore();
+                    } else if (angle < 0 || angle > 360) {
+
+                        cout << "Error: invalid value" << endl;
+                        lineStream.clear();
+                        lineStream.ignore();
+                    
+                    } else { //made it past error checking
+
+                        cout << "time to rotate aragaga" << endl; //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+                    }
+                }
+
+            }
+
         } else if (command == commandList[4]) { //draw
 
         } else if (command == commandList[5]) { //delete
 
         } else { 
             cout << "Error: invalid command" << endl;
+            lineStream.ignore();
         }
 
         
