@@ -31,6 +31,8 @@ int max_shapes;
 
 // ECE244 Student: you may want to add the prototype of
 // helper functions you write here
+bool checkValidShape(string type); //true if shape is valid!
+bool checkValidName(string name); //true if name is valid!
 
 int main() {
 
@@ -124,6 +126,8 @@ int main() {
                 } else if (lineStream.eof()) { //if only one argument was passed
                     cout<< "Error: too few arguments" << endl;
                     lineStream.clear();
+                } else if (!checkValidName(name)) { //if name takes on a reserved keyword
+                    cout<<"Error: invalid shape name"<<endl;
                 } else {
 
                     lineStream >> type;
@@ -135,6 +139,8 @@ int main() {
                     } else if (lineStream.eof()) { //if only two arguments are passed
                         cout << "Error: too few arguments" << endl;
                         lineStream.clear();
+                    } else if (!checkValidShape(type)) { //checking valid type
+                        cout<<"Error: invalid shape type"<<endl;
                     } else {
 
                         lineStream >> x_pos;
@@ -188,14 +194,9 @@ int main() {
                                         if (shapeCount == max_shapes) {
                                             cout << "Error: shape array is full" << endl;
                                         } else {
-                                            for (int i = 0; i < max_shapes; i++) { //finding first null index in shapeArray
-                                                if (shapesArray[i] == NULL) {
-                                                    shapesArray[i] = new Shape(name, type, x_pos, y_pos, x_size, y_size);
-                                                    cout << "Created " << name << ": " <<  x_pos << " " 
-                                                    << y_pos << " " << x_size << " " << y_size << endl;
-                                                    break;
-                                                }
-                                            }
+                                            shapesArray[shapeCount] = new Shape(name, type, x_pos, y_pos, x_size, y_size);
+                                            cout << "Created " << name << ": " <<  x_pos << " " 
+                                            << y_pos << " " << x_size << " " << y_size << endl;
                                             shapeCount++;
                                         }
                                     }
@@ -362,6 +363,14 @@ int main() {
             } else {
 
                 if (arg == "all") { //draw all shapes
+                    cout << "Drew all shapes " << endl;
+                    for (int i = 0; i < shapeCount; i++) { //looping through shapesArray
+                        if (shapesArray[i]!=NULL) {
+                            cout << shapesArray[i]->getName() <<": "<<shapesArray[i]->getType()<< " "
+                            << shapesArray[i]->getXlocation()<<" "<<shapesArray[i]->getYlocation()<<
+                            " "<<shapesArray[i]->getXsize()<<" "<<shapesArray[i]->getYsize()<<endl;
+                        }
+                    }
                     
                 } else { //search for shape name;
                     bool found = false;
@@ -369,7 +378,7 @@ int main() {
                         if (arg == shapesArray[i]->getName()) { //if shape is found
                             cout << "Drew "<< arg <<": " << shapesArray[i]->getType() << " " << 
                             shapesArray[i]->getXlocation() <<" " << shapesArray[i]->getYlocation() << " "
-                            << shapesArray[i]->getXsize() <<" "<< shapesArray[i]->getYsize();
+                            << shapesArray[i]->getXsize() <<" "<< shapesArray[i]->getYsize()<<endl;
                             found = true;
                             break;
                         }
@@ -383,7 +392,7 @@ int main() {
 
         } else if (command == commandList[5]) { //delete
 
-            shapeCount--;
+            //don't decrement shapeCount after deletion
         } else { 
             cout << "Error: invalid command" << endl;
             lineStream.ignore();
@@ -401,3 +410,18 @@ int main() {
     return 0;
 }
 
+bool checkValidShape(string type) { //check passed shape is valid type
+    return (type == shapeTypesList[0] || type == shapeTypesList[1] ||
+    type == shapeTypesList[2] || type == shapeTypesList[3]); 
+    //returns true if type matches any of the accepted shapes
+    //string shapeTypesList[4]={"circle", "ellipse", "rectangle","triangle"};
+}
+
+bool checkValidName(string name) { //check passed name is not a reserved keyword
+    return (name != keyWordsList[0] && name!=keyWordsList[1]&&name!=keyWordsList[2]&&
+    name!=keyWordsList[3]&&name!=keyWordsList[4]&&name!=keyWordsList[5]&&name!=
+    keyWordsList[6]&&name!=shapeTypesList[0]&&name!=shapeTypesList[1]&&name!=shapeTypesList[2]
+    &&name!=shapeTypesList[3]);
+    // string keyWordsList[7]={"all", "maxShapes", "create", 
+    //"move", "rotate", "draw", "delete"};
+}

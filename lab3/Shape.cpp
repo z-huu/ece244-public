@@ -20,8 +20,9 @@
 Shape::Shape(string n, string t, int x_loc, int x_sz, int y_loc, int y_sz) { //constructor implementation
 
     name = n;
-    t = name;
+    type = t;
     x_location = x_loc;
+    y_location = y_loc;
     x_size = x_sz;
     y_size = y_sz;
     //no need to initialize rotation
