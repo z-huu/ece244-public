@@ -96,6 +96,7 @@ int main() {
                             }
                         }
                         delete [] shapesArray;
+                        shapeCount = 0; //should this be here? ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
                     }
 
                     shapesArray = new Shape*[max_shapes];
@@ -189,12 +190,14 @@ int main() {
                                         cout << "Error: too many arguments" << endl;
                                         lineStream.clear();
                                         lineStream.ignore();
+                                    } else if (type == "circle"&&(x_size!=y_size)) { //check that x_size and y_size are identical, if shape is a circle
+                                        cout << "Error: invalid value"<<endl;
                                     } else { //we made it past error checking. lets create the shape now
 
                                         if (shapeCount == max_shapes) {
                                             cout << "Error: shape array is full" << endl;
                                         } else {
-                                            shapesArray[shapeCount] = new Shape(name, type, x_pos, y_pos, x_size, y_size);
+                                            shapesArray[shapeCount] = new Shape(name, type, x_pos, x_size, y_pos, y_size);
                                             cout << "Created " << name << ": " <<  x_pos << " " 
                                             << y_pos << " " << x_size << " " << y_size << endl;
                                             shapeCount++;
@@ -255,7 +258,7 @@ int main() {
                             
                             //search Shapes array for the given name
                             for (int i = 0; i < shapeCount; i++) {
-                                if (name == shapesArray[i]->getName()) { //found the Shape
+                                if (shapesArray[i]!=NULL&&name == shapesArray[i]->getName()) { //found the Shape
                                     shapesArray[i]->setXlocation(locX);
                                     shapesArray[i]->setYlocation(locY);
                                     foundShape = true;
@@ -311,34 +314,26 @@ int main() {
                         lineStream.clear();
                         lineStream.ignore();
                     } else if (angle < 0 || angle > 360) {
-
                         cout << "Error: invalid value" << endl;
                         lineStream.clear();
                         lineStream.ignore();
-                    
                     } else { //made it past error checking
                         bool found = false; int index = 0;
                         //search for shape name in array
                         for (int i = 0; i < max_shapes && !found; i++) {
-                            if (name == shapesArray[i]->getName()) { //found the name
-                                found = true;
-                                index = i;
+                            if (shapesArray[i]!=NULL&&name == shapesArray[i]->getName()) { //found the name
+                                found = true; index = i;
                             }
                         }
                         if (found) {
-
                             shapesArray[index]->setRotate(angle);
                             cout << "Rotated " << name << " by " << angle << " degrees" <<endl;
-
                         } else {
                             cout << "Error: shape " << name << " not found" << endl;
-                        }
-                                   
+                        }         
                     }
                 }
-
             }
-
         } else if (command == commandList[4]) { //draw
 
             string arg;
@@ -375,15 +370,17 @@ int main() {
                 } else { //search for shape name;
                     bool found = false;
                     for (int i = 0; i < max_shapes; i++) {
-                        if (arg == shapesArray[i]->getName()) { //if shape is found
-                            cout << "Drew "<< arg <<": " << shapesArray[i]->getType() << " " << 
-                            shapesArray[i]->getXlocation() <<" " << shapesArray[i]->getYlocation() << " "
-                            << shapesArray[i]->getXsize() <<" "<< shapesArray[i]->getYsize()<<endl;
-                            found = true;
-                            break;
+                        if (shapesArray[i]!=NULL) {
+                            if (arg == shapesArray[i]->getName()) { //if shape is found
+                                cout << "Drew "<< arg <<": " << shapesArray[i]->getType() << " " << 
+                                shapesArray[i]->getXlocation() <<" " << shapesArray[i]->getYlocation() << " "
+                                << shapesArray[i]->getXsize() <<" "<< shapesArray[i]->getYsize()<<endl;
+                                found = true;
+                                break;
+                            }
                         }
                     }
-                    if (!found) { //double check this ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                    if (!found) { 
                         cout << "Error: shape "<<arg<<" not found"<<endl;
                     }
                 }
@@ -392,6 +389,7 @@ int main() {
 
         } else if (command == commandList[5]) { //delete
 
+            //but if we delete all, we set shapeCount = 0?
             //don't decrement shapeCount after deletion
         } else { 
             cout << "Error: invalid command" << endl;
