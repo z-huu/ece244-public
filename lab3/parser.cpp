@@ -154,6 +154,8 @@ int main() {
                             cout <<"Error: too few arguments" << endl;
                             lineStream.clear();
                             lineStream.ignore();
+                        } else if (x_pos < 0) { 
+                            cout <<"Error: invalid value"<<endl;
                         } else {
 
                             lineStream >> y_pos;
@@ -166,6 +168,8 @@ int main() {
                                 cout <<"Error: too few arguments" << endl;
                                 lineStream.clear();
                                 lineStream.ignore();
+                            } else if (y_pos < 0) { 
+                                cout <<"Error: invalid value"<<endl;
                             } else {
 
                                 lineStream >> x_size;
@@ -178,6 +182,8 @@ int main() {
                                     cout <<"Error: too few arguments" << endl;
                                     lineStream.clear();
                                     lineStream.ignore();
+                                } else if (x_size < 0) { 
+                                    cout <<"Error: invalid value"<<endl;
                                 } else {
 
                                     lineStream >> y_size;
@@ -192,13 +198,15 @@ int main() {
                                         lineStream.ignore();
                                     } else if (type == "circle"&&(x_size!=y_size)) { //check that x_size and y_size are identical, if shape is a circle
                                         cout << "Error: invalid value"<<endl;
+                                    } else if (y_size < 0) { 
+                                        cout <<"Error: invalid value"<<endl;
                                     } else { //we made it past error checking. lets create the shape now
 
                                         if (shapeCount == max_shapes) {
                                             cout << "Error: shape array is full" << endl;
                                         } else {
                                             shapesArray[shapeCount] = new Shape(name, type, x_pos, x_size, y_pos, y_size);
-                                            cout << "Created " << name << ": " <<  x_pos << " " 
+                                            cout << "Created "<<name << ": "<<type<<" "<<  x_pos << " " 
                                             << y_pos << " " << x_size << " " << y_size << endl;
                                             shapeCount++;
                                         }
@@ -241,10 +249,10 @@ int main() {
                     } else if (lineStream.eof()) { //if only two arguments were passed
                         cout << "Error: too few arguments" << endl;
                         lineStream.clear();
+                    } else if (locX < 0) { 
+                        cout <<"Error: invalid value"<<endl;
                     } else {
-
                         lineStream >>locY;
-
                         if (lineStream.fail()) { //if third argument is invalid
                             cout << "Error: invalid argument" << endl;
                             lineStream.clear();
@@ -253,7 +261,8 @@ int main() {
                             cout << "Error: too many arguments" << endl;
                             lineStream.clear();
                             lineStream.ignore();
-
+                        } else if (locY < 0) { 
+                            cout <<"Error: invalid value"<<endl;
                         } else { //we've made it past error checking. let's change the Shape object
                             
                             //search Shapes array for the given name
@@ -339,13 +348,17 @@ int main() {
             string arg;
             //one argument, string could be either name or all
             //printing shape with given name or printing all shapes
+            while (lineStream.peek() == 32) { //ignoring spaces after input
+                lineStream.ignore(1);
+            }
 
             if (lineStream.eof()) { //no arguments were passed
+                cout <<"Error: too few arguments"<<endl;
                 lineStream.clear();
                 lineStream.ignore();
-            } 
+            } else {
 
-            lineStream >> arg;
+                lineStream >> arg;
 
             if (lineStream.fail()) { //if argument is invalid
                 cout << "Error: invalid argument" << endl;
@@ -386,6 +399,7 @@ int main() {
                 }
 
             }
+        }
 
         } else if (command == commandList[5]) { //delete
 
