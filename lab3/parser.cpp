@@ -335,14 +335,15 @@ int main() {
                     cout << "Error: invalid argument" << endl;
                     lineStream.clear();
                     lineStream.ignore();
-                } else if (!found) {
+                } else if (!checkValidName(name)) {
+                    cout<<"Error: invalid shape name"<<endl;
+                }else if (!found) {
                     cout <<"Error: shape "<<name<<" not found"<<endl;
                 } else if (lineStream.eof()) { //if only one argument was passed
                     cout<< "Error: too few arguments" << endl;
                     lineStream.clear();
                     lineStream.ignore();
                 } else {
-
                     lineStream >> angle;
 
                     if (lineStream.fail()) { //if the second argument is invalid
@@ -398,6 +399,8 @@ int main() {
                 cout << "Error: invalid argument" << endl;
                 lineStream.clear();
                 lineStream.ignore();
+            } else if (!checkValidName(arg)&&arg!="all") { 
+                cout<<"Error: invalid shape name"<<endl;
             } else if (!found&&arg!="all") {
                 cout<<"Error: shape "<<arg<<" not found"<<endl;
             } else if (!lineStream.eof()) { //if more than one argument is passed
@@ -461,6 +464,8 @@ int main() {
                     cout << "Error: invalid argument" << endl;
                     lineStream.clear();
                     lineStream.ignore();
+                } else if (!checkValidName(arg)&&arg!="all") {
+                    cout<<"Error: invalid shape name"<<endl;
                 } else if (!found&&arg!="all"){
                     cout <<"Error: shape "<<arg<<" not found"<<endl;
                 } else if (!lineStream.eof()) { //if more than one argument is passed
