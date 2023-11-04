@@ -33,6 +33,7 @@ int max_shapes;
 // helper functions you write here
 bool checkValidShape(string type); //true if shape is valid!
 bool checkValidName(string name); //true if name is valid!
+bool checkEof(stringstream& lineStream);
 
 int main() {
 
@@ -70,7 +71,8 @@ int main() {
                 // take in argument(s)
   
                 lineStream >> max_shapes;
-
+                lineStream >> ws;
+                    
                 if (lineStream.fail() ) { //checking for incorrect argument
                     cout << "Error: invalid argument" << endl;
                     lineStream.clear();
@@ -126,6 +128,7 @@ int main() {
             } else {
 
                 lineStream >> name;
+                lineStream >> ws;
                     
                 if (lineStream.fail()) { //if first argument is invalid
                     cout<< "Error: invalid argument" << endl;
@@ -138,7 +141,7 @@ int main() {
                     lineStream.clear();
                 } else {
 
-                    lineStream >> type;
+                    lineStream >> type; lineStream >> ws;
 
                     if (lineStream.fail()) { //if second argument is invalid
                         cout << "Error: invalid argument" << endl;
@@ -154,7 +157,7 @@ int main() {
                                     //else if (!checkValidShape(type)) { //checking valid type
                                     //cout<<"Error: invalid shape type"<<endl;
 
-                        lineStream >> x_pos;
+                        lineStream >> x_pos;lineStream >> ws;
 
                         if (lineStream.fail()) { //if third argument is invalid
                             cout << "Error: invalid argument" << endl;
@@ -168,7 +171,7 @@ int main() {
                             lineStream.ignore();
                         } else {
 
-                            lineStream >> y_pos;
+                            lineStream >> y_pos;lineStream >> ws;
 
                             if (lineStream.fail()) { //if fourth argument is invalid
                                 cout << "Error: invalid argument" << endl;
@@ -182,7 +185,7 @@ int main() {
                                 lineStream.ignore();
                             } else {
 
-                                lineStream >> x_size;
+                                lineStream >> x_size;lineStream >> ws;
 
                                 if (lineStream.fail()) { //if fifth argument is invalid
                                     cout << "Error: invalid argument" << endl;
@@ -195,7 +198,7 @@ int main() {
                                     lineStream.clear();
                                     lineStream.ignore();
                                 } else {
-                                    lineStream >> y_size;
+                                    lineStream >> y_size;lineStream >> ws;
                                     if (lineStream.fail()) { //if sixth argument is invalid
                                         cout << "Error: invalid argument" << endl;
                                         lineStream.clear();
@@ -239,7 +242,7 @@ int main() {
                 cout << "Error: too few arguments" << endl;
             } else {
                 
-                lineStream >> name;
+                lineStream >> name;lineStream >> ws;
                     if (!lineStream.fail()){
                         for (int i = 0; i <shapeCount;i++) {
                             if (shapesArray[i]!=NULL&&name==shapesArray[i]->getName()) {
@@ -259,7 +262,7 @@ int main() {
                     lineStream.clear();
                 } else {
                     
-                    lineStream >> locX;
+                    lineStream >> locX; lineStream >> ws;
 
                     if (lineStream.fail()) { //if second argument is invalid
                         cout << "Error: invalid argument" << endl;
@@ -271,7 +274,7 @@ int main() {
                         cout << "Error: too few arguments" << endl;
                         lineStream.clear();
                     } else {
-                        lineStream >>locY;
+                        lineStream >>locY; lineStream >> ws;
                         if (lineStream.fail()) { //if third argument is invalid
                             cout << "Error: invalid argument" << endl;
                             lineStream.clear();
@@ -322,7 +325,7 @@ int main() {
                 lineStream.ignore();
             } else {
 
-                lineStream >> name;
+                lineStream >> name; lineStream >> ws;
                     if (!lineStream.fail()){
                         for (int i = 0; i <shapeCount;i++) {
                             if (shapesArray[i]!=NULL&&name==shapesArray[i]->getName()) {
@@ -344,7 +347,7 @@ int main() {
                     lineStream.clear();
                     lineStream.ignore();
                 } else {
-                    lineStream >> angle;
+                    lineStream >> angle; lineStream >> ws;
 
                     if (lineStream.fail()) { //if the second argument is invalid
                         cout << "Error: invalid argument" << endl;
@@ -387,7 +390,7 @@ int main() {
                 lineStream.clear();
                 lineStream.ignore();
             } else {
-                lineStream >> arg;
+                lineStream >> arg; lineStream >> ws;
                 if (!lineStream.fail()&&arg!="all"){
                         for (int i = 0; i <shapeCount;i++) {
                             if (shapesArray[i]!=NULL&&arg==shapesArray[i]->getName()) {
@@ -452,7 +455,7 @@ int main() {
                 lineStream.clear();
                 lineStream.ignore();
             } else {
-                    lineStream >> arg;
+                    lineStream >> arg; lineStream >> ws;
                     if (!lineStream.fail()&&arg!="all"){
                         for (int i = 0; i <shapeCount;i++) {
                             if (shapesArray[i]!=NULL&&arg==shapesArray[i]->getName()) {
@@ -523,4 +526,11 @@ bool checkValidName(string name) { //check passed name is not a reserved keyword
     name!=keyWordsList[3]&&name!=keyWordsList[4]&&name!=keyWordsList[5]&&name!=
     keyWordsList[6]&&name!=shapeTypesList[0]&&name!=shapeTypesList[1]&&name!=shapeTypesList[2]
     &&name!=shapeTypesList[3]);
+}
+
+bool checkEof(stringstream& lineStream) {
+    lineStream >> ws;
+    if (lineStream.eof()) {
+        return true;
+    } else { return false; }
 }
