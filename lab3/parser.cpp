@@ -90,7 +90,7 @@ int main() {
 
                     //delete old shapesArray
                     if (shapesArray != NULL) { //if the array is not null, delete the contents
-                        for (int i = 0; i < max_shapes; i++) { //delete each element of the array
+                        for (int i = 0; i < shapeCount; i++) { //delete each element of the array
                             if (shapesArray[i] != NULL) { //if there is a shape at the index
                                 delete shapesArray[i];
                                 shapesArray[i] = NULL;
@@ -507,6 +507,15 @@ int main() {
         
     }  // End input loop until EOF.
     
+    if (cin.eof()) {
+        for (int i = 0; i < shapeCount; i++) {
+            if (shapesArray[i]!=NULL) {
+                delete shapesArray[i]; shapesArray[i] = NULL;
+            }
+        }
+        delete [] shapesArray; shapesArray = NULL;
+    }
+
     return 0;
 }
 
