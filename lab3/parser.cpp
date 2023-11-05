@@ -33,7 +33,6 @@ int max_shapes;
 // helper functions you write here
 bool checkValidShape(string type); //true if shape is valid!
 bool checkValidName(string name); //true if name is valid!
-bool checkEof(stringstream& lineStream);
 
 int main() {
 
@@ -503,9 +502,6 @@ int main() {
             cout << "Error: invalid command" << endl;
             lineStream.ignore();
         }
-
-        
-
         // Once the command has been processed, prompt for the
         // next command
         cout << "> ";          // Prompt for input
@@ -526,11 +522,4 @@ bool checkValidName(string name) { //check passed name is not a reserved keyword
     name!=keyWordsList[3]&&name!=keyWordsList[4]&&name!=keyWordsList[5]&&name!=
     keyWordsList[6]&&name!=shapeTypesList[0]&&name!=shapeTypesList[1]&&name!=shapeTypesList[2]
     &&name!=shapeTypesList[3]);
-}
-
-bool checkEof(stringstream& lineStream) {
-    lineStream >> ws;
-    if (lineStream.eof()) {
-        return true;
-    } else { return false; }
 }
