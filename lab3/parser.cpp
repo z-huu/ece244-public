@@ -59,9 +59,7 @@ int main() {
             lineStream.ignore();
         } else if (command == commandList[0]) { //maxShapes
 
-            while (lineStream.peek() == 32) {
-                lineStream.ignore(1);
-            }
+            lineStream >> ws;
         
             if (lineStream.eof()) { //fileStream has reached the end of input after command, 
                                     //indicating no argument
