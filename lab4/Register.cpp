@@ -17,19 +17,19 @@ Register::Register(int id, double timePerItem, double overhead,
 
 Register::~Register() { }
 
-QueueList* Register::get_queue_list() { }
+QueueList* Register::get_queue_list() { return queue; }
 
-Register* Register::get_next() { }
+Register* Register::get_next() { return next; }
 
-int Register::get_ID() {  }
+int Register::get_ID() { return ID; }
 
-double Register::get_secPerItem() {  }
+double Register::get_secPerItem() { return secPerItem; }
 
-double Register::get_overheadPerCustomer() {  }
+double Register::get_overheadPerCustomer() { return overheadPerCustomer; }
 
-double Register::get_availableTime() {  }
+double Register::get_availableTime() { return availableTime; }
 
-void Register::set_next(Register* nextRegister) {  }
+void Register::set_next(Register* nextRegister) { next = nextRegister; }
 
 
 void Register::set_availableTime(double availableSince) {
@@ -39,6 +39,11 @@ void Register::set_availableTime(double availableSince) {
 double Register::calculateDepartTime() {
   // Get the departure time of the first customer in the queue
   // returns -1 if no customer is in the queue
+  if (queue->get_head() == NULL) {
+    return -1;
+  } else {
+
+  }
   
 }
 
