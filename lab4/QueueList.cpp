@@ -10,7 +10,7 @@ QueueList::~QueueList() {
   
 }
 
-Customer* QueueList::get_head() {  }
+Customer* QueueList::get_head() { return head; }
 
 void QueueList::enqueue(Customer* customer) {
   // a customer is placed at the end of the queue
@@ -20,7 +20,7 @@ void QueueList::enqueue(Customer* customer) {
   } else {
     Customer* p = head;
     while (p->get_next() != NULL) {
-      p = p->get_next(); //iterate until p points to last customer
+      p->set_next(p->get_next()); //iterate until p points to last customer
     }
     p->set_next(customer);
     customer->set_next(NULL); //is this line necessary? i think customers are always initalized to next = null

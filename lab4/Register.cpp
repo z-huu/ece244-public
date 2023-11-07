@@ -42,14 +42,21 @@ double Register::calculateDepartTime() {
   if (queue->get_head() == NULL) {
     return -1;
   } else {
-
-  }
+    return (secPerItem*(queue->get_head()->get_numOfItems())+overheadPerCustomer)+availableTime; //double check that this is calculated right
+  } // departure time = ((secPerItem*numItems) + overheadPerCustomer ) + availableTime
+    // processing time is (secPerItem * numItems) + overheadPerCustomer
+    // departure time = processing time + availableTime
   
 }
 
 void Register::departCustomer(QueueList* doneList) {
   // dequeue the head, set last dequeue time, add to doneList,
   // update availableTime of the register
+  availableTime += (((queue->get_head()->get_numOfItems())*secPerItem)+overheadPerCustomer); //new availableTime = customer's processing time + previous availableTime
+  queue->get_head()->set_departureTime(availableTime); //sets last dequeue time
+  doneList->enqueue(queue->dequeue()); //dequeues head and adds to doneList
+
+  //is this legal lol ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 }
 
 void Register::print() {
