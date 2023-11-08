@@ -42,14 +42,18 @@ double Register::calculateDepartTime() {
   if (queue->get_head() == NULL) {
     return -1;
   } else {
-    return (secPerItem*(queue->get_head()->get_numOfItems())+overheadPerCustomer)+availableTime; //double check that this is calculated right
-  } // departure time = ((secPerItem*numItems) + overheadPerCustomer ) + availableTime
-    // processing time is (secPerItem * numItems) + overheadPerCustomer
-    // departure time = processing time + availableTime
+    double processingTime = (secPerItem * queue->get_head()->get_numOfItems()) + overheadPerCustomer;
+    //double check the following if condition
+    if (queue->get_head()->get_arrivalTime() == availableTime) { //customer arrives when register is available 
+      return (processingTime + availableTime); //processing time + available time
+    } else if (queue->get_head()->get_arrivalTime() > availableTime) { //customer arrives after register is available
+      return(processingTime + queue->get_head()->get_arrivalTime()); //processing time + arrival time
+    }
+  } 
   
 }
 
-void Register::departCustomer(QueueList* doneList) {
+void Register::departCustomer(QueueList* doneList) { //************** avaialbleTime calculation is incorrect; previous available time may have to be replaced with customer arrival time
   // dequeue the head, set last dequeue time, add to doneList,
   // update availableTime of the register
   availableTime += (((queue->get_head()->get_numOfItems())*secPerItem)+overheadPerCustomer); //new availableTime = customer's processing time + previous availableTime

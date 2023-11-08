@@ -20,10 +20,10 @@ void QueueList::enqueue(Customer* customer) {
   } else {
     Customer* p = head;
     while (p->get_next() != NULL) {
-      p->set_next(p->get_next()); //iterate until p points to last customer
+      p = p->get_next(); //iterate until p points to last customer
     }
     p->set_next(customer);
-    customer->set_next(NULL); //is this line necessary? i think customers are always initalized to next = null
+    customer->set_next(NULL); 
   }
 }
 
@@ -35,7 +35,7 @@ Customer* QueueList::dequeue() {
   } else {
     Customer* p = head;
     head = head->get_next();
-    p->set_next(NULL); // should I be doing this?
+    p->set_next(NULL); // should I be doing this? YES!! ****
     return p;
   }
 }
@@ -63,15 +63,11 @@ bool QueueList::empty_queue() {
   // and return true
   if (head == NULL) { //queue is empty
     return false;
-  } else {
-    Customer* p = head->get_next();
-    Customer* prev = head;
-    while (p!=NULL) {
-      prev->set_next(NULL);
-      prev = head;
-      // little confused; is there any dynamically allocated memory in Customer.cpp?~~~~~~~~~~~~~~~~~~~~~
-    }
-  }
+  } 
+  delete head; //if there's any memory leaks check this ~~~~~~~~~~~~~~~~~
+               //maybe they want the deleting of individual customers
+  return true;
+
 }
 
 void QueueList::print() {
