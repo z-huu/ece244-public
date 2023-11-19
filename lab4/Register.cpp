@@ -15,7 +15,7 @@ Register::Register(int id, double timePerItem, double overhead,
                             // queue
 }
 
-Register::~Register() { }
+Register::~Register() { delete queue; }
 
 QueueList* Register::get_queue_list() { return queue; }
 
@@ -44,9 +44,9 @@ double Register::calculateDepartTime() {
   } else {
     double processingTime = (secPerItem * queue->get_head()->get_numOfItems()) + overheadPerCustomer;
     //double check the following if condition
-    if (queue->get_head()->get_arrivalTime() == availableTime) { //customer arrives when register is available 
+    if (queue->get_head()->get_arrivalTime() < availableTime) { //customer arrives when register is available 
       return (processingTime + availableTime); //processing time + available time
-    } else if (queue->get_head()->get_arrivalTime() > availableTime) { //customer arrives after register is available
+    } else if (queue->get_head()->get_arrivalTime() >= availableTime) { //customer arrives after register is available
       return(processingTime + queue->get_head()->get_arrivalTime()); //processing time + arrival time
     }
   } 

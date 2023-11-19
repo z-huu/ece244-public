@@ -34,16 +34,38 @@ Register* RegisterList::get_min_items_register() {
     return nullptr;
   }
 
+  //to find items, loop through each queueList. 
+
   Register* p = head;
-  int minItems; //find a way to iterate through each register's queue to sum and 
-                //find # of items for that register
+  int minItems;
+
+    Customer* hah = head->get_queue_list()->get_head();
+    while (hah != nullptr) {
+      minItems += hah->get_numOfItems();
+      hah = hah->get_next();
+    }
+      
+  int currentItems;
   Register* looper = head->get_next();
 
   while (looper != nullptr) {
 
+      Customer* hah = looper->get_queue_list()->get_head();
+        while (hah != nullptr) {
+        minItems += hah->get_numOfItems();
+        hah = hah->get_next();
+      }
+
+      if (currentItems < minItems) {
+          minItems = currentItems;
+          p = looper;
+      }
+
+      looper = looper->get_next();
+
   }
 
-  // think this one through a bit more
+  return p;
 }
 
 Register* RegisterList::get_free_register() {
@@ -128,12 +150,19 @@ Register* RegisterList::dequeue(int ID) {
     return nullptr;
   } else { //found the register with given ID (pointing to node prior)
 
+    Register* newNext = p->get_next()->get_next();
+    p->get_next()->set_next(NULL);
+    delete p->get_next();
+    p->set_next(newNext);
+
   }
 }
 
 Register* RegisterList::calculateMinDepartTimeRegister(double expTimeElapsed) {
   // return the register with minimum time of departure of its customer
   // if all registers are free, return nullptr
+
+  
 }
 
 void RegisterList::print() {

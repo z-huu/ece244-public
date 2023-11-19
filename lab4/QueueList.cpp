@@ -8,6 +8,8 @@ QueueList::QueueList(Customer* customer) { head = customer; }
 
 QueueList::~QueueList() {
   
+  delete head;
+
 }
 
 Customer* QueueList::get_head() { return head; }

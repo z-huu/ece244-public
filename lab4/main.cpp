@@ -112,6 +112,20 @@ void addCustomer(stringstream &lineStream, string mode) {
   // Depending on the mode of the simulation (single or multiple),
   // add the customer to the single queue or to the register with
   // fewest items
+
+  Customer* dude = new Customer(timeElapsed, items); //make our customer to enqueue
+
+  if (mode == "single") { //just one register, we can simply enqueue the customer
+
+    registerList->get_head()->get_queue_list()->enqueue(dude);
+
+  } else if (mode == "multiple") { //need to enqueue the customer at the register with
+                                   //least number of items.
+    
+    Register* bestReg = registerList->get_min_items_register();
+    bestReg->get_queue_list()->enqueue(dude);
+    
+  }
   
 }
 
