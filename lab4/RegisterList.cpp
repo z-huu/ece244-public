@@ -14,7 +14,8 @@ RegisterList::~RegisterList() {
   // Delete all registers in the list
   // Since each register has a next, we can delete the RegisterList head and hence
   // delete all Registers in the list. (unless there is some dynamically allocated memory?)
-
+    //this would mean losing access to all customer queues attached to the registers.
+    //but are they even dynamically allocated like bruh
   delete head;
 }
 
@@ -28,8 +29,19 @@ int RegisterList::get_size() {
 
 Register* RegisterList::get_min_items_register() {
   // loop all registers to find the register with least number of items
+
+  if (head == nullptr) { //empty list case
+    return nullptr;
+  }
+
   Register* p = head;
+  int minItems; //find a way to iterate through each register's queue to sum and 
+                //find # of items for that register
   Register* looper = head->get_next();
+
+  while (looper != nullptr) {
+
+  }
 
   // think this one through a bit more
 }

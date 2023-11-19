@@ -53,10 +53,13 @@ double Register::calculateDepartTime() {
   
 }
 
-void Register::departCustomer(QueueList* doneList) { //************** avaialbleTime calculation is incorrect; previous available time may have to be replaced with customer arrival time
+void Register::departCustomer(QueueList* doneList) { 
   // dequeue the head, set last dequeue time, add to doneList,
   // update availableTime of the register
-  availableTime += (((queue->get_head()->get_numOfItems())*secPerItem)+overheadPerCustomer); //new availableTime = customer's processing time + previous availableTime
+
+   //new availableTime = customer's processing time + (previous availableTime OR customer arrival time)
+   //handled already in calculation of customer departure time
+  availableTime = queue->get_head()->get_departureTime();
   queue->get_head()->set_departureTime(availableTime); //sets last dequeue time
   doneList->enqueue(queue->dequeue()); //dequeues head and adds to doneList
 
