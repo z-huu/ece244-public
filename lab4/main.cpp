@@ -72,12 +72,23 @@ int main() {
     } else {
       cout << "Invalid operation" << endl;
     }
+
+    if (mode == "single") {
+
+      
+
+    } else if (mode == "multiple") {
+
+    }
+
     cout << "> ";  // Prompt for input
     getline(cin, line);
   }
 
   // You have to make sure all dynamically allocated memory is freed 
   // before return 0
+  delete registerList->get_head();
+
   return 0;
 }
 
@@ -113,7 +124,8 @@ void addCustomer(stringstream &lineStream, string mode) {
   // add the customer to the single queue or to the register with
   // fewest items
 
-  Customer* dude = new Customer(timeElapsed, items); //make our customer to enqueue
+  expTimeElapsed += timeElapsed;
+  Customer* dude = new Customer(expTimeElapsed, items); //make our customer to enqueue
 
   if (mode == "single") { //just one register, we can simply enqueue the customer
 
@@ -156,6 +168,28 @@ void openRegister(stringstream &lineStream, string mode) {
     return;
   }
 
+  expTimeElapsed += timeElapsed;
+  bool registerExists = registerList->foundRegister(ID);
+
+  if (registerExists) { //register already exists
+
+    cout << "Error: register "<<ID<< " is already open." << endl; //print error message
+    return;
+
+  } else { //doesn't exist. open the register
+
+    Register* newRegister = new Register(ID, secPerItem, setupTime, expTimeElapsed);
+    registerList->enqueue(newRegister);
+    cout << "Opened register "<<ID<<endl;
+
+    if (mode == "single") { //adding a customer as we open the register
+
+      newRegister->get_queue_list()->enqueue(singleQueue->get_head());
+      Customer* bungus = singleQueue->dequeue();
+
+    }
+
+  }
   // Check if the register is already open
   // If it's open, print an error message
   // Otherwise, open the register
@@ -177,10 +211,23 @@ void closeRegister(stringstream &lineStream, string mode) {
     cout << "Error: too many arguments" << endl;
     return;
   }
+
   // Check if the register is open
-  // If it is open dequeue it and free it's memory
-  // Otherwise, print an error message 
-  
+  bool foundRegister = registerList->foundRegister(ID);
+
+  if (foundRegister) { //if register exists
+
+    //dequeue register & free its memory
+    Register* dequeued = registerList->dequeue(ID);
+    delete dequeued;
+
+  } else { //register doesn't exist
+
+    //print error message
+    cout << "Error: register "<<ID << " is not open" << endl;
+
+  }
+
 }
 
 bool getInt(stringstream &lineStream, int &iValue) {

@@ -152,8 +152,10 @@ Register* RegisterList::dequeue(int ID) {
 
     Register* newNext = p->get_next()->get_next();
     p->get_next()->set_next(NULL);
-    delete p->get_next();
+    //delete p->get_next();
+    Register* toReturn = p->get_next();
     p->set_next(newNext);
+    return toReturn;
 
   }
 }
@@ -162,6 +164,7 @@ Register* RegisterList::calculateMinDepartTimeRegister(double expTimeElapsed) {
   // return the register with minimum time of departure of its customer
   // if all registers are free, return nullptr
 
+  //incomplete ~~~~~~~~~~~~~~
   
 }
 
