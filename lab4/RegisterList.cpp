@@ -168,6 +168,12 @@ Register* RegisterList::calculateMinDepartTimeRegister(double expTimeElapsed) {
     return nullptr;
   }
 
+  ////////////////////////////////////////////////////
+  //                                                //
+  //    Initially implemented w/o expTimeElapsed    //
+  ////////////////////////////////////////////////////
+
+
   //if all registers are free
   Register *searcher = head;
   while (searcher->get_queue_list()->get_head() == NULL) { //traverse while reg line is empty

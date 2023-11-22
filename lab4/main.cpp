@@ -75,9 +75,44 @@ int main() {
 
     if (mode == "single") {
 
-      
+      //check if any customers can depart  
+        //if yes, depart them
+      Register* handler = registerList->calculateMinDepartTimeRegister(0); //if this is empty, then while loop doesn't trigger
+      while (handler->get_queue_list()->get_head()->get_departureTime() < expTimeElapsed) { //while someone can still be departed
+
+        //Dequeue all departable customers.
+        handler->departCustomer(doneList);
+
+        //Maybe queue up eligible customers here?
+        if (doneList->get_head() != NULL) {
+          handler->get_queue_list()->enqueue(doneList->get_head());
+          cout << "Queued a customer with free register "<< handler->get_ID() << endl;
+        }
+        //send handler to the register with the next smallest departure time.
+        handler = registerList->calculateMinDepartTimeRegister(0);
+      }
+
+
+
+
+        //should we be queuing and dequeuing people outside of commands? yes    
 
     } else if (mode == "multiple") {
+
+      //A code block that might be helpful for departing multiple customers at a queue
+      /*
+
+        while (handler != nullptr) { //while we haven't gone through all the registers
+
+        handleHelper = handler->get_queue_list()->get_head();
+        while (handleHelper->get_departureTime() < expTimeElapsed) { //
+          
+        }
+
+      }
+      
+      */
+
 
     }
 
