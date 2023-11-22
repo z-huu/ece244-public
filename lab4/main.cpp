@@ -73,7 +73,7 @@ int main() {
       cout << "Invalid operation" << endl;
     }
 
-    if (mode == "single") {
+    if (mode == "single") { //BEGIN SINGLE ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
       //check if any customers can depart  
         //if yes, depart them
@@ -97,6 +97,7 @@ int main() {
 
         //should we be queuing and dequeuing people outside of commands? yes    
 
+    // END SINGLE ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     } else if (mode == "multiple") {
 
       //A code block that might be helpful for departing multiple customers at a queue
