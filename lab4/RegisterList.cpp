@@ -164,7 +164,39 @@ Register* RegisterList::calculateMinDepartTimeRegister(double expTimeElapsed) {
   // return the register with minimum time of departure of its customer
   // if all registers are free, return nullptr
 
-  //incomplete ~~~~~~~~~~~~~~
+  if (head == nullptr) { //empty list case
+    return nullptr;
+  }
+
+  //if all registers are free
+  Register *searcher = head;
+  while (searcher->get_queue_list()->get_head() == NULL) { //traverse while reg line is empty
+
+    if (searcher = nullptr) { //if we reach end and there all reg are empty, return nullptr
+      return nullptr;
+    }
+
+    searcher = searcher->get_next();
+  }
+
+  Register* p = head;
+  int minTime = p->get_queue_list()->get_head()->get_departureTime();
+
+  Register* looper = head->get_next();
+
+  while (looper != nullptr) {
+
+    int currTime = looper->get_queue_list()->get_head()->get_departureTime();
+    if (currTime < minTime) {
+      minTime = currTime;
+      p = looper;
+    }
+
+    looper = looper->get_next();
+
+  }
+
+  return p;
   
 }
 
