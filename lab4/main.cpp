@@ -77,10 +77,12 @@ int main() {
 
       //check if any customers can depart  
         //if yes, depart them
+        cout << "made it here" << endl; //debug 1 ~~~~~~~~~~~~~~~~~~
       Register* handler = registerList->calculateMinDepartTimeRegister(0); //if this is empty, then while loop doesn't trigger
       while (handler->get_queue_list()->get_head()->get_departureTime() < expTimeElapsed) { //while someone can still be departed
 
         //Dequeue all departable customers.
+        cout << "Departed a customer at register ID "<<handler->get_ID()<<" at "<< handler->get_queue_list()->get_head()->get_departureTime()<<endl;
         handler->departCustomer(doneList);
 
         //Maybe queue up eligible customers here?
@@ -92,10 +94,6 @@ int main() {
         handler = registerList->calculateMinDepartTimeRegister(0);
       }
 
-
-
-
-        //should we be queuing and dequeuing people outside of commands? yes    
 
     // END SINGLE ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     } else if (mode == "multiple") {
@@ -165,6 +163,11 @@ void addCustomer(stringstream &lineStream, string mode) {
 
   if (mode == "single") { //just one register, we can simply enqueue the customer
 
+    // If a customer can't be queued
+    if (  (registerList->get_head() == NULL) || (registerList->get_free_register() == nullptr) ) {
+      cout << "No free registers" << endl;
+      return;
+    }
     registerList->get_head()->get_queue_list()->enqueue(dude);
 
   } else if (mode == "multiple") { //need to enqueue the customer at the register with
@@ -205,6 +208,8 @@ void openRegister(stringstream &lineStream, string mode) {
   }
 
   expTimeElapsed += timeElapsed;
+
+  cout << "made it here2"<<endl; //debug 2~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   bool registerExists = registerList->foundRegister(ID);
 
   if (registerExists) { //register already exists
@@ -220,9 +225,13 @@ void openRegister(stringstream &lineStream, string mode) {
 
     if (mode == "single") { //adding a customer as we open the register
 
-      newRegister->get_queue_list()->enqueue(singleQueue->get_head());
-      Customer* bungus = singleQueue->dequeue();
+      // Case where there's no customers to add
+      if (singleQueue->get_head() != NULL) {
+        
+        newRegister->get_queue_list()->enqueue(singleQueue->get_head());
+        Customer* bungus = singleQueue->dequeue();
 
+      }
     }
 
   }
