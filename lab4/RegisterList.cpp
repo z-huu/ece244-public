@@ -175,15 +175,21 @@ Register* RegisterList::calculateMinDepartTimeRegister(double expTimeElapsed) {
 
 
   //if all registers are free
-  Register *searcher = head;
-  while (searcher->get_queue_list()->get_head() == NULL) { //traverse while reg line is empty
+  Register *searcher = head; 
 
-    if (searcher = nullptr) { //if we reach end and there all reg are empty, return nullptr
+  //this while loop is a problem ////////////////////////////////
+  while (searcher->get_queue_list()->get_head() == NULL) { //traverse while reg line is empty
+    //makes it into the while loop (nothing worng iwth the condition)
+    
+    if (searcher == nullptr) { //if we reach end and there all reg are empty, return nullptr
+      cout <<"nullptr if"<<endl;
       return nullptr;
     }
 
     searcher = searcher->get_next();
   }
+  //////////////////////////////////////////////////////////////// segfaulting before here
+  cout << "Made it here 3"<< endl;
 
   Register* p = head;
   int minTime = p->get_queue_list()->get_head()->get_departureTime();

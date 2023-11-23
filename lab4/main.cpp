@@ -77,9 +77,13 @@ int main() {
 
       //check if any customers can depart  
         //if yes, depart them
+       
         cout << "made it here" << endl; //debug 1 ~~~~~~~~~~~~~~~~~~
+
       Register* handler = registerList->calculateMinDepartTimeRegister(0); //if this is empty, then while loop doesn't trigger
-      while (handler->get_queue_list()->get_head()->get_departureTime() < expTimeElapsed) { //while someone can still be departed
+
+      cout <<"made it here 3" <<endl;
+      while ( (handler != NULL)&&(handler->get_queue_list()->get_head()->get_departureTime() < expTimeElapsed)  ) { //while someone can still be departed
 
         //Dequeue all departable customers.
         cout << "Departed a customer at register ID "<<handler->get_ID()<<" at "<< handler->get_queue_list()->get_head()->get_departureTime()<<endl;
