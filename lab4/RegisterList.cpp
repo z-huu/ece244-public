@@ -78,10 +78,11 @@ Register* RegisterList::get_free_register() {
 
   Register* p = head;
   while (p != NULL) {
+    cout<<"get_free register"<<endl;
     if (p->get_queue_list()->get_head() == NULL) { //if a register's queue list is empty (no customers)
       return p;
     }
-    p->set_next(p->get_next());
+    p = p->get_next();
   }
 
   return nullptr;
@@ -132,16 +133,13 @@ Register* RegisterList::dequeue(int ID) {
   // return the dequeued register
   // return nullptr if register was not found
 
-  if (head == NULL) {
+  if (head == NULL) { //Empty list case
     return nullptr;
-  } else if (head->get_next() == NULL) {
-    head->set_next(NULL);
-    Register *p = head;
-    head = NULL;
-    return p;
-  }
+  } 
 
   Register* p = head;
+
+  //Traverse until p hits end of list or until node two ahead of p is the target
   while (p != NULL || p->get_next()->get_ID() != ID) {
     p = p->get_next();
   }
@@ -168,6 +166,7 @@ Register* RegisterList::calculateMinDepartTimeRegister(double expTimeElapsed) {
     return nullptr;
   }
 
+  cout << "calculateMinDepartTime" <<endl; //debugging 
   ////////////////////////////////////////////////////
   //                                                //
   //    Initially implemented w/o expTimeElapsed    //
@@ -177,37 +176,53 @@ Register* RegisterList::calculateMinDepartTimeRegister(double expTimeElapsed) {
   //if all registers are free
   Register *searcher = head; 
 
-  //this while loop is a problem ////////////////////////////////
   while (searcher->get_queue_list()->get_head() == NULL) { //traverse while reg line is empty
-    //makes it into the while loop (nothing worng iwth the condition)
-    
-    if (searcher == nullptr) { //if we reach end and there all reg are empty, return nullptr
-      cout <<"nullptr if"<<endl;
+    cout << "yeah?"<<endl;
+    if (searcher == NULL) { //if we reach end and there all reg are empty, return nullptr
+      cout <<"return null1"<<endl;
       return nullptr;
     }
 
     searcher = searcher->get_next();
-  }
-  //////////////////////////////////////////////////////////////// segfaulting before here
-  cout << "Made it here 3"<< endl;
 
+    if (searcher == NULL) {
+      cout<<"return null2"<<endl;
+      return nullptr;
+    }
+
+  }
+
+  cout <<"test1"<<endl;
   Register* p = head;
+  if (  (head->get_next() == NULL)||(head->get_queue_list()->get_head() == NULL) ) return p;
+  
   int minTime = p->get_queue_list()->get_head()->get_departureTime();
+  int currTime;
 
   Register* looper = head->get_next();
 
-  while (looper != nullptr) {
+  // In the case of two free registers, we add one customer (fine) but segfault after adding
+  // another one. This is because when looper gets set to head->get_next(), we try to access
+  // the first customer in looper's queue, but there is no customer. Hence segfault.
 
-    int currTime = looper->get_queue_list()->get_head()->get_departureTime();
+  //While looper pointer is on a valid register
+  while (looper != nullptr) { 
+    cout<<"test2"<<endl;
+    if (looper->get_queue_list()->get_head() != NULL) { //if looper has a customer
+      currTime = looper->get_queue_list()->get_head()->get_departureTime();
+    } else { //The traversed register doesn't have a customer rn
+      return looper;
+    }
+    cout<<"testahh"<<endl;
     if (currTime < minTime) {
       minTime = currTime;
       p = looper;
     }
 
     looper = looper->get_next();
-
+  cout<<"test3"<<endl;
   }
-
+  
   return p;
   
 }

@@ -52,6 +52,7 @@ double Register::calculateDepartTime() {
     } else if (queue->get_head()->get_arrivalTime() >= availableTime) { //customer arrives after register is available
       return(processingTime + queue->get_head()->get_arrivalTime()); //processing time + arrival time
     }
+    return -1;
   } 
   
 }

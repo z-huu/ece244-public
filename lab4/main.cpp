@@ -33,6 +33,8 @@ bool getInt(stringstream &lineStream, int &iValue);
 bool getDouble(stringstream &lineStream, double &dValue);
 bool foundMoreArgs(stringstream &lineStream);
 
+void queueCustomers(QueueList* singleQueue );
+
 // Global variables
 RegisterList *registerList; // holding the list of registers
 QueueList *doneList; // holding the list of customers served
@@ -75,29 +77,49 @@ int main() {
 
     if (mode == "single") { //BEGIN SINGLE ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-      //check if any customers can depart  
-        //if yes, depart them
-       
-        cout << "made it here" << endl; //debug 1 ~~~~~~~~~~~~~~~~~~
+      //New code skeleton
+
+      // Update the system.
+        //Depart all departable customers, queue customers into free registers
+        //Repeat until no more departable customers, or no more customers to queue.
+
+
+      //CODE BELOW IS TO BE REDONE
 
       Register* handler = registerList->calculateMinDepartTimeRegister(0); //if this is empty, then while loop doesn't trigger
-
-      cout <<"made it here 3" <<endl;
-      while ( (handler != NULL)&&(handler->get_queue_list()->get_head()->get_departureTime() < expTimeElapsed)  ) { //while someone can still be departed
-
+      if (handler != NULL) cout <<handler->get_ID()<<endl;
+      while ( (handler != NULL)&&(handler->get_queue_list()->get_head()!=NULL)&&(handler->get_queue_list()->get_head()->get_departureTime() <= expTimeElapsed)  ) { //while someone can still be departed
         //Dequeue all departable customers.
         cout << "Departed a customer at register ID "<<handler->get_ID()<<" at "<< handler->get_queue_list()->get_head()->get_departureTime()<<endl;
         handler->departCustomer(doneList);
 
         //Maybe queue up eligible customers here?
-        if (doneList->get_head() != NULL) {
-          handler->get_queue_list()->enqueue(doneList->get_head());
+        if (singleQueue->get_head() != NULL) {
+          handler->get_queue_list()->enqueue(singleQueue->dequeue());
+          handler->get_queue_list()->get_head()->set_departureTime(handler->calculateDepartTime());
           cout << "Queued a customer with free register "<< handler->get_ID() << endl;
         }
         //send handler to the register with the next smallest departure time.
         handler = registerList->calculateMinDepartTimeRegister(0);
       }
 
+      cout<<"yeah"<<endl;
+      //queue customers (one deep)
+      //while there is at least one free register. 
+      //if multiple free registers, queue closest to head
+      while ( (registerList->get_free_register() != nullptr)&&(singleQueue->get_head()!=NULL)  ) { 
+        cout <<"A"<<endl;
+        
+        Register* queuer = registerList->get_head();
+        if (  (queuer->get_queue_list()->get_head() == NULL)&&(singleQueue->get_head() != NULL) ) {
+          queuer->get_queue_list()->enqueue(singleQueue->dequeue());
+          cout<<"Queued a customer with free register "<<queuer->get_ID()<<endl;
+          queuer->get_queue_list()->get_head()->set_departureTime(queuer->calculateDepartTime());
+          break;
+        } else {
+          queuer = queuer->get_next();
+        }
+      }
 
     // END SINGLE ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     } else if (mode == "multiple") {
@@ -164,15 +186,13 @@ void addCustomer(stringstream &lineStream, string mode) {
 
   expTimeElapsed += timeElapsed;
   Customer* dude = new Customer(expTimeElapsed, items); //make our customer to enqueue
+  cout << "A customer entered"<<endl;
 
-  if (mode == "single") { //just one register, we can simply enqueue the customer
-
-    // If a customer can't be queued
-    if (  (registerList->get_head() == NULL) || (registerList->get_free_register() == nullptr) ) {
-      cout << "No free registers" << endl;
-      return;
-    }
-    registerList->get_head()->get_queue_list()->enqueue(dude);
+  if (mode == "single") { //enqueue customer in singleQueue
+  
+    singleQueue->enqueue(dude);
+    cout <<"debug queued"<<endl;
+    
 
   } else if (mode == "multiple") { //need to enqueue the customer at the register with
                                    //least number of items.
@@ -213,7 +233,6 @@ void openRegister(stringstream &lineStream, string mode) {
 
   expTimeElapsed += timeElapsed;
 
-  cout << "made it here2"<<endl; //debug 2~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   bool registerExists = registerList->foundRegister(ID);
 
   if (registerExists) { //register already exists
@@ -232,7 +251,7 @@ void openRegister(stringstream &lineStream, string mode) {
       // Case where there's no customers to add
       if (singleQueue->get_head() != NULL) {
         
-        newRegister->get_queue_list()->enqueue(singleQueue->get_head());
+        newRegister->get_queue_list()->enqueue(singleQueue->dequeue());
         Customer* bungus = singleQueue->dequeue();
 
       }
