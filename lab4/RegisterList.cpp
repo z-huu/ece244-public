@@ -90,6 +90,19 @@ Register* RegisterList::get_free_register() {
 
 
   return iterator;
+  Register* iterator = head;
+
+  //While the current register has a customer
+  while (iterator->get_queue_list()->get_head() != NULL) {
+    iterator = iterator->get_next();
+    // If we push iterator to a register with no customers, loop stops running and
+    // we return iterator.
+    if (iterator == NULL) { //If we've reached the end of the register list.
+      return nullptr;
+    }
+  }
+
+  return iterator;
 }
 
 void RegisterList::enqueue(Register* newRegister) {

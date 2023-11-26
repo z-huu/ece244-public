@@ -86,6 +86,11 @@ int main() {
             //  <= expTimeElapsed
           //Condition for customers to queue
             //  if singleQueue->get_head() != NULL     if there is at least one customer in q
+          //Condition for departable customers
+            //  if (register)->get_queue_list()->get_head()->get_departureTime()
+            //  <= expTimeElapsed
+          //Condition for customers to queue
+            //  if singleQueue->get_head() != NULL     if there is at least one customer in q
         //Repeat until no more departable customers, or no more customers to queue.
 
       Register* handler;
@@ -309,7 +314,7 @@ void openRegister(stringstream &lineStream, string mode) {
   expTimeElapsed += timeElapsed;
 
   bool registerExists = registerList->foundRegister(ID);
-  
+
   if (registerExists) { //register already exists
 
     cout << "Error: register "<<ID<< " is already open." << endl; //print error message
