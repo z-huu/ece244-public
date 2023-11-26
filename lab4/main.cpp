@@ -105,7 +105,7 @@ int main() {
           if (registerList->get_head() == NULL)  {
               departable = false;
           } else {
-              
+              //
             //Scan over the register list to see if there are any customers
             //whose departure times are smaller than expTimeElapsed.
             while (scanner !=NULL) {
