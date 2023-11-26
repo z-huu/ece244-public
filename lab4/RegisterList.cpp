@@ -72,20 +72,24 @@ Register* RegisterList::get_free_register() {
   // return the register with no customers
   // if all registers are occupied, return nullptr
 
-  if (head == NULL) {
+  if (head == NULL) { //Empty register list case.
     return nullptr;
   }
 
-  Register* p = head;
-  while (p != NULL) {
-    cout<<"get_free register"<<endl;
-    if (p->get_queue_list()->get_head() == NULL) { //if a register's queue list is empty (no customers)
-      return p;
+  Register* iterator = head;
+
+  //While the current register has a customer
+  while (iterator->get_queue_list()->get_head() != NULL) {
+    iterator = iterator->get_next();
+    // If we push iterator to a register with no customers, loop stops running and
+    // we return iterator.
+    if (iterator == NULL) { //If we've reached the end of the register list.
+      return nullptr;
     }
-    p = p->get_next();
   }
 
-  return nullptr;
+
+  return iterator;
 }
 
 void RegisterList::enqueue(Register* newRegister) {
@@ -162,69 +166,68 @@ Register* RegisterList::calculateMinDepartTimeRegister(double expTimeElapsed) {
   // return the register with minimum time of departure of its customer
   // if all registers are free, return nullptr
 
-  if (head == nullptr) { //empty list case
-    return nullptr;
+  //Check if all registers are free. aka,
+  //Check that all registers' queueLists' heads are NULL.
+  cout << "Start of calcMinDepartTime. Debug message"<<endl;
+  if (head == NULL) return nullptr; //Empty register list case
+
+  int freeRegCounter = 0;
+  Register* toReturn = head;
+  Register* searcher;
+  int minTime;
+  
+  if (head->get_next()!=NULL) {
+    searcher=head->get_next();
+  } else { return toReturn; }
+
+  Register* checker = head;
+
+  while (checker != NULL) {
+    
+    if (checker->get_queue_list()->get_head() != NULL) freeRegCounter++;
+    //Register Debugging //////////////////////////////////////////////////
+    cout << "Register ID: " << checker->get_ID();
+      if (checker->get_queue_list()->get_head() == NULL) {
+        cout <<" had no customers." << endl;
+      } else {
+        cout << " had a customer." << endl;
+      }
+    //Register DEbugging //////////////////////////////////////////////
+    checker = checker->get_next();
+
   }
 
-  cout << "calculateMinDepartTime" <<endl; //debugging 
-  ////////////////////////////////////////////////////
-  //                                                //
-  //    Initially implemented w/o expTimeElapsed    //
-  ////////////////////////////////////////////////////
+  if (freeRegCounter <= 0) return nullptr;
+  //End check of all free registers. Past this point, can assume there is at least
+  //one occupied register.
 
+  //Find the first occupied register to start from.
+  searcher = head;
+  while (searcher != NULL) {
+    if (searcher->get_queue_list()->get_head()!=NULL) {
+      toReturn = searcher;
+      minTime = toReturn->get_queue_list()->get_head()->get_departureTime();
+      break;
+    }
+    searcher = searcher->get_next();
+  }
 
-  //if all registers are free
-  Register *searcher = head; 
+  //toReturn is now situated at the occupied register closest to the regList head
+  searcher = toReturn->get_next();
+  while (searcher != NULL) {
+    
+    if (  (searcher->get_queue_list()->get_head() != NULL)&&
+          (searcher->calculateDepartTime() < minTime) ) {
 
-  while (searcher->get_queue_list()->get_head() == NULL) { //traverse while reg line is empty
-    cout << "yeah?"<<endl;
-    if (searcher == NULL) { //if we reach end and there all reg are empty, return nullptr
-      cout <<"return null1"<<endl;
-      return nullptr;
+          minTime = searcher->calculateDepartTime();
+          toReturn = searcher;
     }
 
     searcher = searcher->get_next();
 
-    if (searcher == NULL) {
-      cout<<"return null2"<<endl;
-      return nullptr;
-    }
-
   }
-
-  cout <<"test1"<<endl;
-  Register* p = head;
-  if (  (head->get_next() == NULL)||(head->get_queue_list()->get_head() == NULL) ) return p;
-  
-  int minTime = p->get_queue_list()->get_head()->get_departureTime();
-  int currTime;
-
-  Register* looper = head->get_next();
-
-  // In the case of two free registers, we add one customer (fine) but segfault after adding
-  // another one. This is because when looper gets set to head->get_next(), we try to access
-  // the first customer in looper's queue, but there is no customer. Hence segfault.
-
-  //While looper pointer is on a valid register
-  while (looper != nullptr) { 
-    cout<<"test2"<<endl;
-    if (looper->get_queue_list()->get_head() != NULL) { //if looper has a customer
-      currTime = looper->get_queue_list()->get_head()->get_departureTime();
-    } else { //The traversed register doesn't have a customer rn
-      return looper;
-    }
-    cout<<"testahh"<<endl;
-    if (currTime < minTime) {
-      minTime = currTime;
-      p = looper;
-    }
-
-    looper = looper->get_next();
-  cout<<"test3"<<endl;
-  }
-  
-  return p;
-  
+  cout <<"End of calcMinDepartTimeReg. Debug message" <<endl;
+  return toReturn;
 }
 
 void RegisterList::print() {
