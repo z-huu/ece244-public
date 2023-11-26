@@ -81,46 +81,121 @@ int main() {
 
       // Update the system.
         //Depart all departable customers, queue customers into free registers
+          //Condition for departable customers
+            //  if (register)->get_queue_list()->get_head()->get_departureTime()
+            //  <= expTimeElapsed
+          //Condition for customers to queue
+            //  if singleQueue->get_head() != NULL     if there is at least one customer in q
         //Repeat until no more departable customers, or no more customers to queue.
 
+      Register* handler;
+      Register* scanner = registerList->get_head();
+      Register* toQueue;
+      bool queuable = true;
+      bool departable = true;
+      //Outer while loop, to update the system
+      while (queuable||departable) {
+        cout << "The outer loop runs again! Debug in outer loop."<<endl;
+        //Updating queuable and departable conditions. Note: they're set to true
+        //every time a command is input.
+          if (singleQueue->get_head()==NULL) queuable = false; //If no customers
+          if (registerList->get_free_register() == NULL) queuable = false; //If all registers occupied.
 
-      //CODE BELOW IS TO BE REDONE
+          if (  (registerList->get_head() == NULL)||(registerList
+                  ->calculateMinDepartTimeRegister(0) == nullptr) ) {
+              //There are no registers currently, or ALL registers are free
+              departable = false;
+          } else {
+              
+            //Scan over the register list to see if there are any customers
+            //whose departure times are smaller than expTimeElapsed.
+            while (scanner !=NULL) {
+              if (scanner->get_queue_list()->get_head() == NULL) { 
+                //Scanner lands on an unoccupied register
+                //Send the scanner to the next reg. Looking for registers WITH customers.
+                scanner = scanner->get_next();
 
-      Register* handler = registerList->calculateMinDepartTimeRegister(0); //if this is empty, then while loop doesn't trigger
-      if (handler != NULL) cout <<handler->get_ID()<<endl;
-      while ( (handler != NULL)&&(handler->get_queue_list()->get_head()!=NULL)&&(handler->get_queue_list()->get_head()->get_departureTime() <= expTimeElapsed)  ) { //while someone can still be departed
-        //Dequeue all departable customers.
-        cout << "Departed a customer at register ID "<<handler->get_ID()<<" at "<< handler->get_queue_list()->get_head()->get_departureTime()<<endl;
-        handler->departCustomer(doneList);
+              } else if (scanner->get_queue_list()->get_head()->get_departureTime() <= expTimeElapsed) {
+                departable = true; break;
+                //If we find a customer who should be departed, break out of the loop.
+              } else {
+                scanner = scanner->get_next();
+              }
 
-        //Maybe queue up eligible customers here?
-        if (singleQueue->get_head() != NULL) {
-          handler->get_queue_list()->enqueue(singleQueue->dequeue());
-          handler->get_queue_list()->get_head()->set_departureTime(handler->calculateDepartTime());
-          cout << "Queued a customer with free register "<< handler->get_ID() << endl;
+              //If we reach the end of the regList and we are still in the loop, there
+              //are no departable customers.
+              if (scanner == NULL) {
+                departable = false;
+              }
+
+            } //end scanner while
+          }
+        //End of updating queuable and departable.
+
+          //Queuing customers into free registers
+          if (queuable) {
+
+            //Sets the register of interest to the first free one.
+            //First referring to closest to the head of the registerList.
+
+            toQueue = registerList->get_free_register();
+            toQueue->get_queue_list()->enqueue(singleQueue->dequeue());
+
+            //Dequeues a customer from the singleQueue and queues it in the
+            //register of interest.
+
+            //Output message.
+            cout << "Queued a customer with free register "<< toQueue->get_ID() << endl;
+            
+            //Set the customer's departure time. 
+            toQueue->get_queue_list()->get_head()->set_departureTime
+            ( toQueue->calculateDepartTime()  );
+
+            cout << "Finish queuing a customer! Debug message at end of queuable."<<endl;
+          } //End queuable.
+
+          //Departing customers from the registers
+          if (departable) {
+
+            //End of scanning
+            //At this point, we've scanned and departable has been updated.
+            //Begin departing customers in order of departure time.
+            
+              //Sends handler to the register with the smallest departure time.
+              //We can assume handler is NOT nullptr as we have scanned and saw that
+              //there are departable customers (nullptr is if all registers are free)
+
+              handler = registerList->calculateMinDepartTimeRegister(0);
+              //Departure message.
+                cout << "Departed a customer at register ID "<<handler->get_ID()<<" at "
+                << handler->get_queue_list()->get_head()->get_departureTime()<<endl;
+
+              //Now that handler is pointing to a register, start departing.
+              cout << "Departing a customer now! Debug message in departable."<<endl;
+              handler->departCustomer(doneList);
+                
+              
+        } //End departable.
+
+      } //END OUTER WHILE ~~~~~~~~~~~~~~~~~
+
+      ////////////// Debugging Processes ///////////////////////
+
+      // Print the register list.
+      bool printRegList = 0; //IF YOU WANT TO PRINT THE REGISTER LIST ~~~~~~~~~~~~~~~~~~~~~~~~~~
+      if (printRegList) {
+
+        cout <<"Printing Register List."<<endl;
+        Register* printer = registerList->get_head();
+
+        while (printer != NULL) {
+          cout << "Register ID: "<<printer->get_ID() <<endl;
+          printer = printer->get_next();
         }
-        //send handler to the register with the next smallest departure time.
-        handler = registerList->calculateMinDepartTimeRegister(0);
-      }
 
-      cout<<"yeah"<<endl;
-      //queue customers (one deep)
-      //while there is at least one free register. 
-      //if multiple free registers, queue closest to head
-      while ( (registerList->get_free_register() != nullptr)&&(singleQueue->get_head()!=NULL)  ) { 
-        cout <<"A"<<endl;
-        
-        Register* queuer = registerList->get_head();
-        if (  (queuer->get_queue_list()->get_head() == NULL)&&(singleQueue->get_head() != NULL) ) {
-          queuer->get_queue_list()->enqueue(singleQueue->dequeue());
-          cout<<"Queued a customer with free register "<<queuer->get_ID()<<endl;
-          queuer->get_queue_list()->get_head()->set_departureTime(queuer->calculateDepartTime());
-          break;
-        } else {
-          queuer = queuer->get_next();
-        }
+        cout <<"End Register List"<<endl;
       }
-
+    
     // END SINGLE ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     } else if (mode == "multiple") {
 
@@ -234,7 +309,7 @@ void openRegister(stringstream &lineStream, string mode) {
   expTimeElapsed += timeElapsed;
 
   bool registerExists = registerList->foundRegister(ID);
-
+  
   if (registerExists) { //register already exists
 
     cout << "Error: register "<<ID<< " is already open." << endl; //print error message
@@ -329,3 +404,49 @@ bool foundMoreArgs(stringstream &lineStream) {
     return true;
   }
 }
+
+/*
+Register* handler;
+      //CODE BELOW IS TO BE REDONE
+      if (registerList->calculateMinDepartTimeRegister(0) == nullptr) { //all registers are free
+        handler = registerList->get_head();
+      } else {
+        handler = registerList->calculateMinDepartTimeRegister(0);
+      }
+
+      if (handler != NULL) cout << "Register ID: " << handler->get_ID()<<endl;
+ 
+      while ( (handler != NULL)&&(handler->get_queue_list()->get_head()!=NULL)&&(handler->get_queue_list()->get_head()->get_departureTime() <= expTimeElapsed)  ) { //while someone can still be departed
+        //Dequeue all departable customers.
+        cout << "Departed a customer at register ID "<<handler->get_ID()<<" at "<< handler->get_queue_list()->get_head()->get_departureTime()<<endl;
+        handler->departCustomer(doneList);
+
+        //Maybe queue up eligible customers here?
+        if (singleQueue->get_head() != NULL) {
+          handler->get_queue_list()->enqueue(singleQueue->dequeue());
+          handler->get_queue_list()->get_head()->set_departureTime(handler->calculateDepartTime());
+          cout << "Queued a customer with free register "<< handler->get_ID() << endl;
+        }
+        //send handler to the register with the next smallest departure time.
+        handler = registerList->calculateMinDepartTimeRegister(0);
+      }
+
+      cout<<"Passed initial while loop in main (departing one)"<<endl;
+      //queue customers (one deep)
+      //while there is at least one free register. 
+      //if multiple free registers, queue closest to head
+      while ( (registerList->get_free_register() != nullptr)&&(singleQueue->get_head()!=NULL)  ) { 
+        cout <<"A"<<endl;
+        
+        Register* queuer = registerList->get_head();
+        if (  (queuer->get_queue_list()->get_head() == NULL)&&(singleQueue->get_head() != NULL) ) {
+          queuer->get_queue_list()->enqueue(singleQueue->dequeue());
+          cout<<"Queued a customer with free register "<<queuer->get_ID()<<endl;
+          queuer->get_queue_list()->get_head()->set_departureTime(queuer->calculateDepartTime());
+          break;
+        } else {
+          queuer = queuer->get_next();
+        }
+      }
+
+*/

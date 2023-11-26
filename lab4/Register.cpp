@@ -63,10 +63,13 @@ void Register::departCustomer(QueueList* doneList) {
 
    //new availableTime = customer's processing time + (previous availableTime OR customer arrival time)
    //handled already in calculation of customer departure time
+   if (queue->get_head()==NULL) std::cout << "Woof!"<<std::endl;
   availableTime = queue->get_head()->get_departureTime();
+  std::cout << "got the departure time. Debug in departCustomer."<<std::endl;
   queue->get_head()->set_departureTime(availableTime); //sets last dequeue time
+  std::cout << "set the departure time. Debug in departCustomer."<<std::endl;
   doneList->enqueue(queue->dequeue()); //dequeues head and adds to doneList
-
+  std::cout <<"Dequeued from queueList, queued into doneList. Debug in departCustomer"<<std::endl;
   //is this legal lol ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 }
 
