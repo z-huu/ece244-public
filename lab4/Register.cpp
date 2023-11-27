@@ -42,7 +42,6 @@ void Register::set_availableTime(double availableSince) {
 double Register::calculateDepartTime() {
   // Get the departure time of the first customer in the queue
   // returns -1 if no customer is in the queue
-  std::cout << "Calculatedeparttime debug" << std::endl;
   if (queue->get_head() == NULL) {
     return -1;
   } else {
@@ -75,7 +74,6 @@ void Register::departCustomer(QueueList* doneList) {
   queue->get_head()->set_departureTime(availableTime); //sets last dequeue time
 
   doneList->enqueue(queue->dequeue()); //dequeues head and adds to doneList
-  std::cout <<"Dequeued from queueList, queued into doneList. Debug in departCustomer"<<std::endl;
   //is this legal lol ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 }
 

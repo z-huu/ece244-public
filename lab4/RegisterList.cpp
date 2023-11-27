@@ -34,42 +34,17 @@ Register* RegisterList::get_min_items_register() {
     return nullptr;
   }
 
-  //to find items, loop through each queueList. 
-
-  Register* p = head;
-  int minItems;
-
-    Customer* hah = head->get_queue_list()->get_head();
-    while (hah != nullptr) {
-
-      if (hah == NULL) {
-        
-      }
-      minItems += hah->get_numOfItems();
-      hah = hah->get_next();
-    }
-      
-  int currentItems;
+  Register* first = head;
   Register* looper = head->get_next();
+  if (looper == NULL) return first;
 
   while (looper != nullptr) {
-
-      Customer* hah = looper->get_queue_list()->get_head();
-        while (hah != nullptr) {
-        minItems += hah->get_numOfItems();
-        hah = hah->get_next();
-      }
-
-      if (currentItems < minItems) {
-          minItems = currentItems;
-          p = looper;
-      }
-
-      looper = looper->get_next();
-
+    if (looper->get_queue_list()->get_items() < first->get_queue_list()->get_items()) {
+      first = looper;
+    }
+    looper = looper->get_next();
   }
-
-  return p;
+  return first;
 }
 
 Register* RegisterList::get_free_register() {
@@ -126,11 +101,13 @@ bool RegisterList::foundRegister(int ID) {
 
   Register *p = head;
   while (p!=NULL) {
-
     if (p->get_ID() == ID) {
       return true;
     }
     p = p->get_next();
+    if (p == NULL) {
+      return false;
+    }
   }
   return false;
 }
@@ -144,26 +121,30 @@ Register* RegisterList::dequeue(int ID) {
   if (head == NULL) { //Empty list case
     return nullptr;
   } 
+  
+  Register* looker = head;
 
-  Register* p = head;
-
-  //Traverse until p hits end of list or until node two ahead of p is the target
-  while (p != NULL || p->get_next()->get_ID() != ID) {
-    p = p->get_next();
+  if (head->get_ID() == ID) { //First node case
+    head = head->get_next();
+    looker->set_next(NULL);
+    return looker;
   }
 
-  if (p == NULL) { //register with given ID doesn't exist
-    return nullptr;
-  } else { //found the register with given ID (pointing to node prior)
+  while (looker->get_next() != NULL) {
 
-    Register* newNext = p->get_next()->get_next();
-    p->get_next()->set_next(NULL);
-    //delete p->get_next();
-    Register* toReturn = p->get_next();
-    p->set_next(newNext);
-    return toReturn;
+    if (looker->get_next()->get_ID() == ID) {
+      Register* toReturn = looker->get_next();
+      looker->set_next(toReturn->get_next());
+      toReturn->set_next(NULL);
+      return toReturn;
+    }
 
+    looker = looker->get_next();
+    if (looker->get_next() == NULL) {
+      return nullptr;
+    }
   }
+  return nullptr;
 }
 
 Register* RegisterList::calculateMinDepartTimeRegister(double expTimeElapsed) {
@@ -172,7 +153,6 @@ Register* RegisterList::calculateMinDepartTimeRegister(double expTimeElapsed) {
 
   //Check if all registers are free. aka,
   //Check that all registers' queueLists' heads are NULL.
-  cout << "Start of calcMinDepartTime. Debug message"<<endl;
   if (head == NULL) return nullptr; //Empty register list case
 
   int freeRegCounter = 0;
@@ -189,6 +169,7 @@ Register* RegisterList::calculateMinDepartTimeRegister(double expTimeElapsed) {
   while (checker != NULL) {
     
     if (checker->get_queue_list()->get_head() != NULL) freeRegCounter++;
+    /*
     //Register Debugging //////////////////////////////////////////////////
     cout << "Register ID: " << checker->get_ID();
       if (checker->get_queue_list()->get_head() == NULL) {
@@ -197,6 +178,7 @@ Register* RegisterList::calculateMinDepartTimeRegister(double expTimeElapsed) {
         cout << " had a customer." << endl;
       }
     //Register DEbugging //////////////////////////////////////////////
+    */
     checker = checker->get_next();
 
   }
@@ -230,7 +212,6 @@ Register* RegisterList::calculateMinDepartTimeRegister(double expTimeElapsed) {
     searcher = searcher->get_next();
 
   }
-  cout <<"End of calcMinDepartTimeReg. Debug message" <<endl;
   return toReturn;
 }
 

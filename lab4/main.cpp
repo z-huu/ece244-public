@@ -16,16 +16,16 @@ using namespace std;
 string getMode();
 
 // Register
-void parseRegisterAction(stringstream &lineStream, string mode);
+void parseRegisterAction(stringstream &lineStream, string mode, bool &closedRegister, int &regID);
 void openRegister(
     stringstream &lineStream,
     string mode);  // register opens (it is upto customers to join)
 void closeRegister(stringstream &lineStream,
-                   string mode);  // register closes 
+                   string mode, bool &closedRegister, int &regID);  // register closes 
 
 // Customer
 void addCustomer(stringstream &lineStream,
-                 string mode, int lastID, bool addedCustomer);  // customer wants to join
+                 string mode, int &lastID, bool &addedCustomer);  // customer wants to join
 
 
 // Helper functions
@@ -40,8 +40,8 @@ RegisterList *registerList; // holding the list of registers
 QueueList *doneList; // holding the list of customers served
 QueueList *singleQueue; // holding customers in a single virtual queue
 double expTimeElapsed; // time elapsed since the beginning of the simulation
-bool addedCustomer;
-int lastID;
+bool addedCustomer, closedRegister;
+int lastID, regID;
 // List of commands:
 // To open a register
 // register open <ID> <secPerItem> <setupTime> <timeElapsed>
@@ -67,12 +67,15 @@ int main() {
 
   while (!cin.eof()) {
     addedCustomer = false;
+    closedRegister = false;
     stringstream lineStream(line);
     lineStream >> command;
     if (command == "register") {
-      parseRegisterAction(lineStream, mode);
+      parseRegisterAction(lineStream, mode, closedRegister, regID);
+      
     } else if (command == "customer") {
       addCustomer(lineStream, mode, lastID, addedCustomer);
+      
     } else {
       cout << "Invalid operation" << endl;
     }
@@ -96,7 +99,6 @@ int main() {
       bool departable = true;
       //Outer while loop, to update the system
       while (queuable||departable) {
-
         //Updating queuable and departable conditions. Note: they're set to true
         //every time a command is input.
           if (singleQueue->get_head()==NULL) queuable = false; //If no customers
@@ -130,7 +132,6 @@ int main() {
             } //end scanner while
           }
         //End of updating queuable and departable.
-
           //Departing customers from the registers
           if (departable) {
 
@@ -152,6 +153,12 @@ int main() {
                 
               
           } //End departable.
+
+          //Account for closed registers.
+          if (closedRegister) {
+            Register* dequeued = registerList->dequeue(regID);
+            delete dequeued;
+          }
 
           //Update queuable again after departing finishes.
           queuable = true;
@@ -241,34 +248,40 @@ int main() {
 
       //Customers will not enter before a register is made.
 
-      Register* departer = registerList->get_head();
+      Register* departer = registerList->calculateMinDepartTimeRegister(0);
+      if (departer->get_queue_list()->get_head()!=NULL) departer->get_queue_list()->get_head()->set_departureTime(departer->calculateDepartTime());
       //What to do if registerList is empty?
-      while (departer != NULL) {
+      while ( (departer->calculateDepartTime() != -1)&&(departer->calculateDepartTime() <= expTimeElapsed) ) {
 
         //Start departing customers, if eligible. Runs if there are customers in queue.
-        while ( (departer->calculateDepartTime() != -1)&&(departer->calculateDepartTime() <= expTimeElapsed) ) {
-          cout << "Departed a customer at register ID "<<departer->get_ID()<<" at "<<expTimeElapsed<<endl;
-          doneList->enqueue(  departer->get_queue_list()->dequeue() );
-          //Shifts head down to the next customer.
-          if (departer->get_queue_list()->get_head() == NULL) {
-            //If we run out of customers.
-            break;
-          }
-        }
+        departer->get_queue_list()->get_head()->set_departureTime(departer->calculateDepartTime());
+        cout << "Departed a customer at register ID "<<departer->get_ID()<<" at "<<departer->get_queue_list()->get_head()->get_departureTime()<<endl;
+
+        departer->departCustomer(doneList);
+        //Shifts head down to the next customer.
+     
+        
 
         //Travel to the next register in the registerLine.
-        departer = departer->get_next(); 
+        departer = registerList->calculateMinDepartTimeRegister(0);
+        if (departer == NULL) {
+          break;
+        }
       }
 
       //End of departing customers.
 
+      //Account for closed registers.
+
+      if (closedRegister) {
+        Register* dequeued = registerList->dequeue(regID);
+        delete dequeued;
+      }
       //Now queue up customers.
       if (addedCustomer) {
 
         cout << "A customer entered"<<endl;
         cout << "Queued a customer with quickest register "<<lastID<<endl;
-      } else {
-        cout << "addedCustomer was not true!" <<endl;
       }
 
     } // END MULTIPLE ~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -298,7 +311,7 @@ int main() {
 
     yup = doneList->get_head();
     while (yup != nullptr) {
-      avgWaitDiff = pow( ((yup->get_departureTime() - yup->get_arrivalTime())-(avgWait)) , 2 ); //formula here
+      avgWaitDiff += pow( ((yup->get_departureTime() - yup->get_arrivalTime())-(avgWait)), 2 ); //formula here
       yup = yup->get_next();
     }
 
@@ -309,7 +322,7 @@ int main() {
     cout << "Finished at time "<<expTimeElapsed << endl;
     cout << "Statistics: " << endl;
     cout << "Maximum wait time: " <<maxWait <<endl;
-    cout << "Average wait time: "<<avgWait<<endl;
+    cout << "Average wait time: "<<abs(avgWait)<<endl;
     cout << "Standard Deviation of wait time: " << stdDev << endl;
 
   // You have to make sure all dynamically allocated memory is freed 
@@ -336,10 +349,9 @@ string getMode() {
   return mode;
 }
 
-void addCustomer(stringstream &lineStream, string mode, int lastID, bool addedCustomer) {
+void addCustomer(stringstream &lineStream, string mode, int &lastID, bool &addedCustomer) {
   int items;
   double timeElapsed;
-  addedCustomer = true;
   if (!getInt(lineStream, items) || !getDouble(lineStream, timeElapsed)) {
     cout << "Error: too few arguments." << endl;
     return;
@@ -354,7 +366,7 @@ void addCustomer(stringstream &lineStream, string mode, int lastID, bool addedCu
 
   expTimeElapsed += timeElapsed;
   Customer* dude = new Customer(expTimeElapsed, items); //make our customer to enqueue
-
+  dude->set_arrivalTime(expTimeElapsed);
   if (mode == "single") { //enqueue customer in singleQueue
     
     cout << "A customer entered"<<endl;
@@ -366,6 +378,7 @@ void addCustomer(stringstream &lineStream, string mode, int lastID, bool addedCu
   } else if (mode == "multiple") { //need to enqueue the customer at the register with
                                    //least number of items.
     addedCustomer = true;
+    
     Register* bestReg = registerList->get_min_items_register();
     bestReg->get_queue_list()->enqueue(dude);
     lastID = bestReg->get_ID();
@@ -374,13 +387,13 @@ void addCustomer(stringstream &lineStream, string mode, int lastID, bool addedCu
   
 }
 
-void parseRegisterAction(stringstream &lineStream, string mode) {
+void parseRegisterAction(stringstream &lineStream, string mode, bool &closedRegister, int &regID) {
   string operation;
   lineStream >> operation;
   if (operation == "open") {
     openRegister(lineStream, mode);
   } else if (operation == "close") {
-    closeRegister(lineStream, mode);
+    closeRegister(lineStream, mode, closedRegister, regID);
   } else {
     cout << "Invalid operation" << endl;
   }
@@ -437,7 +450,7 @@ void openRegister(stringstream &lineStream, string mode) {
   
 }
 
-void closeRegister(stringstream &lineStream, string mode) {
+void closeRegister(stringstream &lineStream, string mode, bool &closedRegister, int &regID) {
   int ID;
   double timeElapsed;
   // convert string to int
@@ -450,20 +463,15 @@ void closeRegister(stringstream &lineStream, string mode) {
     return;
   }
 
+  expTimeElapsed += timeElapsed;
   // Check if the register is open
   bool foundRegister = registerList->foundRegister(ID);
+  if (!foundRegister) { //if register exists
 
-  if (foundRegister) { //if register exists
-
-    //dequeue register & free its memory
-    Register* dequeued = registerList->dequeue(ID);
-    delete dequeued;
-
-  } else { //register doesn't exist
-
-    //print error message
     cout << "Error: register "<<ID << " is not open" << endl;
-
+  } else { //register doesn't exist
+    closedRegister = true;
+    regID = ID;
   }
 
 }
