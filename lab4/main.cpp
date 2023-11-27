@@ -276,6 +276,7 @@ int main() {
       if (closedRegister) {
         Register* dequeued = registerList->dequeue(regID);
         delete dequeued;
+        closedRegister = false;
       }
       //Now queue up customers.
       if (addedCustomer) {
