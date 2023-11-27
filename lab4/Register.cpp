@@ -71,6 +71,7 @@ void Register::departCustomer(QueueList* doneList) {
 
   availableTime = queue->get_head()->get_departureTime();
 
+  //Maybe this is problematic? Don't see why though. Just seems redundant ///////////////////////////
   queue->get_head()->set_departureTime(availableTime); //sets last dequeue time
 
   doneList->enqueue(queue->dequeue()); //dequeues head and adds to doneList

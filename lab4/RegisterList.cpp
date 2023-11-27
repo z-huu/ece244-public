@@ -41,6 +41,10 @@ Register* RegisterList::get_min_items_register() {
 
     Customer* hah = head->get_queue_list()->get_head();
     while (hah != nullptr) {
+
+      if (hah == NULL) {
+        
+      }
       minItems += hah->get_numOfItems();
       hah = hah->get_next();
     }
