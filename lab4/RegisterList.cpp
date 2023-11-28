@@ -129,9 +129,7 @@ Register* RegisterList::dequeue(int ID) {
     looker->set_next(NULL);
     return looker;
   }
-
   while (looker->get_next() != NULL) {
-
     if (looker->get_next()->get_ID() == ID) {
       Register* toReturn = looker->get_next();
       looker->set_next(toReturn->get_next());

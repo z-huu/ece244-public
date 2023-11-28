@@ -146,7 +146,7 @@ int main() {
               handler = registerList->calculateMinDepartTimeRegister(0);
               //Departure message.
                 cout << "Departed a customer at register ID "<<handler->get_ID()<<" at "
-                << handler->get_queue_list()->get_head()->get_departureTime()<<endl;
+                << handler->calculateDepartTime()<<endl;
 
               //Now that handler is pointing to a register, start departing.
               handler->departCustomer(doneList);
@@ -158,6 +158,7 @@ int main() {
           if (closedRegister) {
             Register* dequeued = registerList->dequeue(regID);
             delete dequeued;
+            closedRegister = false;
           }
 
           //Update queuable again after departing finishes.
@@ -170,16 +171,13 @@ int main() {
 
             //Sets the register of interest to the first free one.
             //First referring to closest to the head of the registerList.
-
             toQueue = registerList->get_free_register();
             toQueue->get_queue_list()->enqueue(singleQueue->dequeue());
-
             //Dequeues a customer from the singleQueue and queues it in the
             //register of interest.
 
             //Output message.
             cout << "Queued a customer with free register "<< toQueue->get_ID() << endl;
-            
             //Set the customer's departure time. 
             toQueue->get_queue_list()->get_head()->set_departureTime
             ( toQueue->calculateDepartTime()  );
@@ -190,13 +188,12 @@ int main() {
         //every time a command is input.
           if (singleQueue->get_head()==NULL) queuable = false; //If no customers
           if (registerList->get_free_register() == NULL) queuable = false; //If all registers occupied.
-
           if (registerList->get_head() == NULL)  {
               departable = false;
           } else { //If there are registers
-              //
             //Scan over the register list to see if there are any customers
             //whose departure times are smaller than expTimeElapsed.
+            scanner = registerList->get_head();
             while (scanner !=NULL) {
               if (scanner->get_queue_list()->get_head() == NULL) { 
                 //Scanner lands on an unoccupied register
@@ -328,7 +325,9 @@ int main() {
 
   // You have to make sure all dynamically allocated memory is freed 
   // before return 0
-  delete registerList->get_head();
+  delete registerList;
+  delete singleQueue;
+  delete doneList;
 
   return 0;
 }
