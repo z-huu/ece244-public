@@ -105,11 +105,13 @@ int main() {
           if (registerList->get_free_register() == NULL) queuable = false; //If all registers occupied.
 
           if (registerList->get_head() == NULL)  {
+              cout << "set departable to false"<<endl;
               departable = false;
           } else { //If there are registers
               //
             //Scan over the register list to see if there are any customers
             //whose departure times are smaller than expTimeElapsed.
+            scanner = registerList->get_head();
             while (scanner !=NULL) {
               if (scanner->get_queue_list()->get_head() == NULL) { 
                 //Scanner lands on an unoccupied register
@@ -126,6 +128,7 @@ int main() {
               //If we reach the end of the regList and we are still in the loop, there
               //are no departable customers.
               if (scanner == NULL) {
+                cout <<"Searching set departable to false"<<endl;
                 departable = false;
               }
 
@@ -156,6 +159,7 @@ int main() {
 
           //Account for closed registers.
           if (closedRegister) {
+            cout << "Closed register "<< regID << endl;
             Register* dequeued = registerList->dequeue(regID);
             delete dequeued;
             closedRegister = false;
@@ -189,6 +193,7 @@ int main() {
           if (singleQueue->get_head()==NULL) queuable = false; //If no customers
           if (registerList->get_free_register() == NULL) queuable = false; //If all registers occupied.
           if (registerList->get_head() == NULL)  {
+            cout << "set departable false 2" << endl;
               departable = false;
           } else { //If there are registers
             //Scan over the register list to see if there are any customers
@@ -210,6 +215,7 @@ int main() {
               //If we reach the end of the regList and we are still in the loop, there
               //are no departable customers.
               if (scanner == NULL) {
+                cout << "searching set depart false 2 " << endl;
                 departable = false;
               }
 
@@ -317,7 +323,7 @@ int main() {
       stdDev = sqrt((avgWaitDiff)/numCustomers);
     }
 
-    cout << "Finished at time "<<expTimeElapsed << endl;
+    cout << "Finished at time " <<expTimeElapsed << endl;
     cout << "Statistics: " << endl;
     cout << "Maximum wait time: " <<maxWait <<endl;
     cout << "Average wait time: "<<abs(avgWait)<<endl;
@@ -414,8 +420,6 @@ void openRegister(stringstream &lineStream, string mode) {
     return;
   }
 
-  expTimeElapsed += timeElapsed;
-
   bool registerExists = registerList->foundRegister(ID);
 
   if (registerExists) { //register already exists
@@ -425,6 +429,7 @@ void openRegister(stringstream &lineStream, string mode) {
 
   } else { //doesn't exist. open the register
 
+    expTimeElapsed += timeElapsed;
     Register* newRegister = new Register(ID, secPerItem, setupTime, expTimeElapsed);
     registerList->enqueue(newRegister);
     cout << "Opened register "<<ID<<endl;
@@ -435,7 +440,8 @@ void openRegister(stringstream &lineStream, string mode) {
       if (singleQueue->get_head() != NULL) {
         
         newRegister->get_queue_list()->enqueue(singleQueue->dequeue());
-        Customer* bungus = singleQueue->dequeue();
+        cout << "Queued a customer with free register "<<newRegister->get_ID()<<endl;
+        newRegister->get_queue_list()->get_head()->set_departureTime(newRegister->calculateDepartTime());
 
       }
     }
@@ -463,15 +469,15 @@ void closeRegister(stringstream &lineStream, string mode, bool &closedRegister, 
     return;
   }
 
-  expTimeElapsed += timeElapsed;
   // Check if the register is open
   bool foundRegister = registerList->foundRegister(ID);
   if (!foundRegister) { //if register exists
 
-    cout << "Error: register "<<ID << " is not open" << endl;
+    cout << "Error: register "<< ID << " is not open" << endl;
   } else { //register doesn't exist
     closedRegister = true;
     regID = ID;
+    expTimeElapsed += timeElapsed;
   }
 
 }
