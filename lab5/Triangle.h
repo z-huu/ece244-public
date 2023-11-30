@@ -14,11 +14,33 @@
 
 #include <iostream>
 #include <string>
+
+#include "Shape.h"
 using namespace std;
 
 
 // This class implements the triangle Shape objects.
 // ECE244 Student: Write the definition of the class here.
+
+class Triangle : public Shape {
+private:
+
+    float xc1, xc2, xc3, yc1, yc2, yc3;
+
+public:
+    // Constructor
+    Triangle (string n, float x1, float y1, float x2, float y2, float x3, float y3);
+    
+    // Destructor
+    virtual ~Triangle();
+    
+    // Utility methods
+    virtual void draw() const;     
+    
+    virtual float computeArea() const;   // Computes the area
+    
+    virtual Shape* clone() const;  // Clones the object
+};
 
 #endif /* Triangle_h */
 
