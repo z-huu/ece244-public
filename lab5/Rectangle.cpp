@@ -17,6 +17,7 @@
 #include <iostream>
 #include <string>
 #include <iomanip>
+#include <cmath>
 using namespace std;
 
 Rectangle::Rectangle(string n, float xcent, float ycent, float w, float h):Shape(n, xcent, ycent) {
@@ -75,7 +76,7 @@ void Rectangle::draw() const {
     
 float Rectangle::computeArea() const {
 
-    return width*height;
+    return abs(width*height);
 
 }   // Computes the area of the rectangle
     

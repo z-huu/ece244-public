@@ -28,6 +28,7 @@ using namespace std;
 
 #include "Circle.h"
 #include "Rectangle.h"
+#include "Triangle.h"
 
 #define MAX_SHAPES 1000
 #define MAX_SHAPE_TYPES 10
@@ -39,7 +40,6 @@ ShapesDB sdb(MAX_SHAPES,MAX_SHAPE_TYPES);
 Shape* parseCircleCommand(stringstream& line);
 Shape* parseRectangleCommand(stringstream& line);
 Shape* parseTriangleCommand(stringstream& line);
-
 
 int main () {
 
@@ -126,7 +126,7 @@ Shape* parseTriangleCommand(stringstream& line) {
     string name;
     float x1, x2, x3, y1, y2, y3;
 
-    line >> name >> xcent >> ycent >> width >> height;
+    line >> name >> x1 >> y1 >> x2 >> y2 >> x3 >> y3;
     
     // Do a simple error check
     if (line.fail()) {
@@ -147,7 +147,7 @@ Shape* parseTriangleCommand(stringstream& line) {
     }
 
     // Create the shape object and return a pointer to it
-    Shape* myShape = (Shape*) new Rectangle(name, xcent, ycent, width, height);
+    Shape* myShape = (Shape*) new Triangle(name, x1, y1, x2, y2, x3, y3);
     cout << "created triangle" << endl;
     return myShape;
 }
