@@ -45,7 +45,6 @@ bool is_symmetric_helper(TreeNode* left, TreeNode* right) {
     if ((left->data == right->data)) {
       return ((is_symmetric_helper(left->left, right->right))
       &&(is_symmetric_helper(right->left, left->right)));
-    }
+    } else { return false; }
 
-    // Honestly, I'm stumped.
 }
